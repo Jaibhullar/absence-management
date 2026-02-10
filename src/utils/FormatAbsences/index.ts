@@ -15,11 +15,20 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
     return {
       id: absence.id,
       employeeName: `${absence.employee.firstName} ${absence.employee.lastName}`,
-      startDate: new Date(absence.startDate).toLocaleDateString(),
-      endDate: endDate.toLocaleDateString(),
+      startDate: formatDate(absence.startDate),
+      endDate: formatDate(endDate.toISOString()),
       days: absence.days,
       type: formattedType,
       approved: absence.approved,
     };
+  });
+};
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 };
