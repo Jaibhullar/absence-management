@@ -17,10 +17,9 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
       employeeName: `${absence.employee.firstName} ${absence.employee.lastName}`,
       startDate: new Date(absence.startDate).toLocaleDateString(),
       endDate: endDate.toLocaleDateString(),
-      days: `${absence.days} day${absence.days > 1 ? "s" : ""}`,
+      days: absence.days,
       type: formattedType,
       approved: absence.approved,
-      conflicts: false, // Placeholder for conflict logic
     };
   });
 };

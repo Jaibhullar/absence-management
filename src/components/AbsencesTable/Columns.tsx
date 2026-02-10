@@ -3,28 +3,103 @@
 import type { FormattedAbsence } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowUpDown } from "lucide-react";
+import { Button } from "../ui/button";
+import { parseDate } from "@/utils/parseDate";
 
 export const columns: ColumnDef<FormattedAbsence>[] = [
   {
     accessorKey: "employeeName",
-    header: "Employee",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Employee
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "startDate",
-    header: "Start Date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Start Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    sortingFn: (rowA, rowB) => {
+      return (
+        parseDate(rowA.original.startDate) - parseDate(rowB.original.startDate)
+      );
+    },
   },
   {
     accessorKey: "endDate",
-    header: "End Date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          End Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    sortingFn: (rowA, rowB) => {
+      return (
+        parseDate(rowA.original.startDate) - parseDate(rowB.original.startDate)
+      );
+    },
   },
   {
     accessorKey: "days",
-    header: "Duration",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Duration
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const days = row.original.days;
+      return (
+        <span>
+          {days} {days > 1 ? "days" : "day"}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Type
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "approved",
@@ -32,7 +107,7 @@ export const columns: ColumnDef<FormattedAbsence>[] = [
     cell: ({ row }) => {
       const approved = row.original.approved;
       return (
-        <Badge variant={approved ? "default" : "destructive"}>
+        <Badge variant={approved ? "success" : "warning"}>
           {approved ? "Approved" : "Pending"}
         </Badge>
       );
@@ -43,7 +118,7 @@ export const columns: ColumnDef<FormattedAbsence>[] = [
     header: "Conflicts",
     cell: ({ row }) => {
       const conflicts = row.original.conflicts;
-      if (!conflicts)
+      if (conflicts)
         return (
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-destructive w-5 h-5"></AlertTriangle>

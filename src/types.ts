@@ -20,10 +20,10 @@ export type FormattedAbsence = {
   employeeName: string;
   startDate: string;
   endDate: string;
-  days: string;
+  days: number;
   type: FormattedAbsenceType;
   approved: boolean;
-  conflicts: boolean;
+  conflicts?: boolean;
 };
 
 export type FormattedAbsenceType = "Annual Leave" | "Sickness" | "Medical";

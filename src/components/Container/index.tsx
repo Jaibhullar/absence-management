@@ -7,7 +7,7 @@ export type ContainerProps = {
 
 export const Container = ({ children, className }: ContainerProps) => {
   return (
-    <div className={cn("w-[90vw] max-w-295 mx-auto", className)}>
+    <div className={cn("w-[90vw] max-w-7xl mx-auto", className)}>
       {children}
     </div>
   );
