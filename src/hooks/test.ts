@@ -34,6 +34,7 @@ const mockAbsences: Absence[] = [
 const mockFormattedAbsences: FormattedAbsence[] = [
   {
     id: 2,
+    userId: "2",
     startDate: "Feb 1, 2026",
     endDate: "Feb 3, 2026",
     employeeName: "Jane Smith",
@@ -44,6 +45,7 @@ const mockFormattedAbsences: FormattedAbsence[] = [
   },
   {
     id: 1,
+    userId: "1",
     startDate: "Jan 1, 2026",
     endDate: "Jan 5, 2026",
     employeeName: "John Doe",

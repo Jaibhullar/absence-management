@@ -14,6 +14,7 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
 
     return {
       id: absence.id,
+      userId: absence.employee.id,
       employeeName: `${absence.employee.firstName} ${absence.employee.lastName}`,
       startDate: formatDate(absence.startDate),
       endDate: formatDate(endDate.toISOString()),

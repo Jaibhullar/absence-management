@@ -17,6 +17,7 @@ export type AbsenceType = "ANNUAL_LEAVE" | "SICKNESS" | "MEDICAL";
 
 export type FormattedAbsence = {
   id: number;
+  userId: string;
   employeeName: string;
   startDate: string;
   endDate: string;

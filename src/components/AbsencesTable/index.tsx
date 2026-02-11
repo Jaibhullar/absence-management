@@ -1,21 +1,15 @@
-import { useAbsencesTable } from "@/hooks/useAbsencesTable";
-import { Spinner } from "../ui/spinner";
-import { DataTable } from "./DataTable";
-import { columns } from "./Columns";
+import { TableTitle } from "./TableTitle";
+import { TableContent } from "./TableContent";
 
 export const AbsencesTable = () => {
-  const { absences, loading, error } = useAbsencesTable();
-
-  if (loading) {
-    return <Spinner className="mx-auto text-primary size-12"></Spinner>;
-  }
-  if (error) {
-    return <div className="text-destructive text-center">{error}</div>;
-  }
-
   return (
-    <>
-      <DataTable columns={columns} data={absences}></DataTable>
-    </>
+    <section className="flex flex-col max-h-[calc(100vh-200px)] overflow-hidden px-4 py-6 rounded-md space-y-6">
+      <div className="shrink-0">
+        <TableTitle />
+      </div>
+      <div className="flex-1 min-h-0 overflow-auto border rounded-md">
+        <TableContent />
+      </div>
+    </section>
   );
 };

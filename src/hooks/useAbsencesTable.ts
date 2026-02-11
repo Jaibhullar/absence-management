@@ -1,20 +1,26 @@
 import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { getAbsences } from "@/services/getAbsences";
-import type { Absence, FormattedAbsence } from "@/types";
+import type { FormattedAbsence } from "@/types";
 import { formatAbsences } from "@/utils/FormatAbsences";
 import { parseDate } from "@/utils/parseDate";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type useAbsencesTableResponse = {
-  absences: Absence[];
+  absences: FormattedAbsence[];
   error: string | null;
   loading: boolean;
+  filterAbsencesByUser: (userId: string, name: string) => void;
+  clearFilter: () => void;
+  filteredUser: string | null;
 };
 
-export const useAbsencesTable = () => {
+export const useAbsencesTable = (): useAbsencesTableResponse => {
   const [absences, setAbsences] = useState<FormattedAbsence[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [filteredUser, setFilteredUser] = useState<string | null>(null);
+
+  const absencesRef = useRef<null | FormattedAbsence[]>(null);
 
   const fetchAbsences = async () => {
     setLoading(true);
@@ -34,6 +40,7 @@ export const useAbsencesTable = () => {
       );
 
       setAbsences(formattedAbsences);
+      absencesRef.current = formattedAbsences;
     } catch {
       setError("There was an error fetching absences...");
     } finally {
@@ -50,6 +57,20 @@ export const useAbsencesTable = () => {
     }
   };
 
+  const filterAbsencesByUser = (userId: string, name: string) => {
+    if (!absencesRef.current) return [];
+    setAbsences(
+      absencesRef.current.filter((absence) => absence.userId === userId),
+    );
+    setFilteredUser(name);
+  };
+
+  const clearFilter = () => {
+    if (!absencesRef.current) return [];
+    setAbsences(absencesRef.current);
+    setFilteredUser(null);
+  };
+
   useEffect(() => {
     fetchAbsences();
   }, []);
@@ -58,5 +79,8 @@ export const useAbsencesTable = () => {
     absences,
     error,
     loading,
+    filterAbsencesByUser,
+    clearFilter,
+    filteredUser,
   };
 };
