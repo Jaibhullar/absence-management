@@ -49,7 +49,6 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
           return { ...item, conflicts };
         }),
       );
-
       setAbsences(formattedAbsences);
       absencesRef.current = formattedAbsences;
     } catch {
