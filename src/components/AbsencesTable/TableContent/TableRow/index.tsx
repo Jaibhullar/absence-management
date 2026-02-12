@@ -3,33 +3,63 @@ import { Button } from "@/components/ui/button";
 import type { FormattedAbsence } from "@/types";
 import { AlertTriangleIcon } from "lucide-react";
 
-export type TableRowProps = {
-  absence: FormattedAbsence;
+const testIds = {
+  employeeName: "employee-name-button",
+  badge: "status-badge",
+  conflictAlert: "conflict-alert",
 };
 
-export const TableRow = ({ absence }: TableRowProps) => {
+export type TableRowProps = {
+  absence: FormattedAbsence;
+  filterAbsenceByUser: (userId: string, name: string) => void;
+};
+
+export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
   return (
     <tr className="text-center border-t border-b transition-colors hover:bg-secondary text-sm">
       <td className="py-3">
-        <Button variant="link" className="cursor-pointer text-[#0000EE]">
+        <Button
+          variant="link"
+          className="cursor-pointer text-[#0000EE]"
+          onClick={() => {
+            filterAbsenceByUser(absence.userId, absence.employeeName);
+          }}
+          data-testid={testIds.employeeName}
+        >
           {absence.employeeName}
         </Button>
       </td>
       <td className="py-3">{absence.startDate}</td>
       <td className="py-3">{absence.endDate}</td>
+      <td className="py-3">{absence.days}</td>
       <td className="py-3">{absence.type}</td>
       <td className="py-3">
         {absence.approved ? (
-          <Badge className="bg-green-300 text-green-800">Approved</Badge>
+          <Badge
+            className="bg-green-300 text-green-800"
+            data-testid={testIds.badge}
+          >
+            Approved
+          </Badge>
         ) : (
-          <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
+          <Badge
+            className="bg-amber-300 text-amber-800"
+            data-testid={testIds.badge}
+          >
+            Pending
+          </Badge>
         )}
       </td>
       <td className="py-3">
         {absence.conflicts && (
-          <AlertTriangleIcon className="text-destructive mx-auto" />
+          <AlertTriangleIcon
+            className="text-destructive mx-auto"
+            data-testid={testIds.conflictAlert}
+          />
         )}
       </td>
     </tr>
   );
 };
+
+TableRow.testIds = testIds;

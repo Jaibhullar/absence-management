@@ -3,7 +3,7 @@ import type { Absence, FormattedAbsence, FormattedAbsenceType } from "@/types";
 export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
   return absences.map((absence) => {
     const endDate = new Date(absence.startDate);
-    endDate.setDate(endDate.getDate() + absence.days - 1);
+    endDate.setDate(endDate.getDate() + absence.days);
 
     const formattedType: FormattedAbsenceType =
       absence.absenceType === "ANNUAL_LEAVE"

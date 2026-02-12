@@ -5,6 +5,14 @@ import { formatAbsences } from "@/utils/FormatAbsences";
 import { parseDate } from "@/utils/parseDate";
 import { useEffect, useRef, useState } from "react";
 
+export type SortKey =
+  | "employeeName"
+  | "startDate"
+  | "endDate"
+  | "type"
+  | "days";
+export type SortDirection = "asc" | "desc";
+
 export type useAbsencesTableResponse = {
   absences: FormattedAbsence[];
   error: string | null;
@@ -12,6 +20,7 @@ export type useAbsencesTableResponse = {
   filterAbsencesByUser: (userId: string, name: string) => void;
   clearFilter: () => void;
   filteredUser: string | null;
+  sortBy: (key: SortKey) => void;
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
@@ -19,6 +28,8 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [filteredUser, setFilteredUser] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const absencesRef = useRef<null | FormattedAbsence[]>(null);
 
@@ -71,6 +82,32 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     setFilteredUser(null);
   };
 
+  const sortBy = (key: SortKey) => {
+    const direction =
+      sortKey === key && sortDirection === "asc" ? "desc" : "asc";
+    setSortKey(key);
+    setSortDirection(direction);
+
+    const sorted = [...absences].sort((a, b) => {
+      const aVal = a[key];
+      const bVal = b[key];
+
+      if (key === "startDate" || key === "endDate") {
+        const aDate = parseDate(aVal.toString());
+        const bDate = parseDate(bVal.toString());
+        if (aDate < bDate) return direction === "asc" ? -1 : 1;
+        if (aDate > bDate) return direction === "asc" ? 1 : -1;
+        return 0;
+      } else {
+        if (aVal < bVal) return direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+    });
+
+    setAbsences(sorted);
+  };
+
   useEffect(() => {
     fetchAbsences();
   }, []);
@@ -82,5 +119,6 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     filterAbsencesByUser,
     clearFilter,
     filteredUser,
+    sortBy,
   };
 };
