@@ -3,7 +3,8 @@ import { getAbsences } from "@/services/getAbsences";
 import type { FormattedAbsence } from "@/types";
 import { formatAbsences } from "@/utils/formatAbsences";
 import { parseDate } from "@/utils/parseDate";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSortTable } from "../useSortTable";
 
 export type SortKey =
   | "employeeName"
@@ -29,39 +30,6 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   const [absences, setAbsences] = useState<FormattedAbsence[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filteredUser, setFilteredUser] = useState<{
-    name: string;
-    id: string;
-  } | null>(null);
-  const [sortKey, setSortKey] = useState<SortKey | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-
-  const sortedAndFilteredAbsences = useMemo(() => {
-    let result = absences.filter(
-      (a) => !filteredUser || a.userId === filteredUser.id,
-    );
-
-    if (sortKey) {
-      result = [...result].sort((a, b) => {
-        const aVal = a[sortKey];
-        const bVal = b[sortKey];
-
-        if (sortKey === "startDate" || sortKey === "endDate") {
-          const aDate = parseDate(aVal.toString());
-          const bDate = parseDate(bVal.toString());
-          if (aDate < bDate) return sortDirection === "asc" ? -1 : 1;
-          if (aDate > bDate) return sortDirection === "asc" ? 1 : -1;
-          return 0;
-        } else {
-          if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-          if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-          return 0;
-        }
-      });
-    }
-
-    return result;
-  }, [absences, filteredUser, sortKey, sortDirection]);
 
   const fetchAbsences = useCallback(async () => {
     setLoading(true);
@@ -96,25 +64,15 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     }
   };
 
-  const filterAbsencesByUser = (userId: string, name: string) => {
-    if (!absences) return;
-    setFilteredUser({
-      id: userId,
-      name,
-    });
-  };
-
-  const clearFilter = () => {
-    if (!absences) return;
-    setFilteredUser(null);
-  };
-
-  const sortBy = (key: SortKey) => {
-    const direction =
-      sortKey === key && sortDirection === "asc" ? "desc" : "asc";
-    setSortKey(key);
-    setSortDirection(direction);
-  };
+  const {
+    filterAbsencesByUser,
+    clearFilter,
+    filteredUser,
+    sortBy,
+    sortKey,
+    sortDirection,
+    sortedAndFilteredAbsences,
+  } = useSortTable({ absences });
 
   useEffect(() => {
     fetchAbsences();
