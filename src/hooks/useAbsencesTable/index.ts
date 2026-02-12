@@ -1,9 +1,9 @@
 import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { getAbsences } from "@/services/getAbsences";
 import type { FormattedAbsence } from "@/types";
-import { formatAbsences } from "@/utils/FormatAbsences";
+import { formatAbsences } from "@/utils/formatAbsences";
 import { parseDate } from "@/utils/parseDate";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type SortKey =
   | "employeeName"
@@ -19,21 +19,51 @@ export type useAbsencesTableResponse = {
   loading: boolean;
   filterAbsencesByUser: (userId: string, name: string) => void;
   clearFilter: () => void;
-  filteredUser: string | null;
+  filteredUser: { name: string; id: string } | null;
   sortBy: (key: SortKey) => void;
+  sortKey: SortKey | null;
+  sortDirection: SortDirection;
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
   const [absences, setAbsences] = useState<FormattedAbsence[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [filteredUser, setFilteredUser] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filteredUser, setFilteredUser] = useState<{
+    name: string;
+    id: string;
+  } | null>(null);
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
-  const absencesRef = useRef<null | FormattedAbsence[]>(null);
+  const sortedAndFilteredAbsences = useMemo(() => {
+    let result = absences.filter(
+      (a) => !filteredUser || a.userId === filteredUser.id,
+    );
 
-  const fetchAbsences = async () => {
+    if (sortKey) {
+      result = [...result].sort((a, b) => {
+        const aVal = a[sortKey];
+        const bVal = b[sortKey];
+
+        if (sortKey === "startDate" || sortKey === "endDate") {
+          const aDate = parseDate(aVal.toString());
+          const bDate = parseDate(bVal.toString());
+          if (aDate < bDate) return sortDirection === "asc" ? -1 : 1;
+          if (aDate > bDate) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+        } else {
+          if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+          if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+        }
+      });
+    }
+
+    return result;
+  }, [absences, filteredUser, sortKey, sortDirection]);
+
+  const fetchAbsences = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -50,34 +80,32 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
         }),
       );
       setAbsences(formattedAbsences);
-      absencesRef.current = formattedAbsences;
     } catch {
       setError("There was an error fetching absences...");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchConflicts = async (absenceId: number) => {
     try {
       const { conflicts } = await getAbsenceConflict(absenceId);
       return conflicts;
     } catch {
-      return false;
+      return null;
     }
   };
 
   const filterAbsencesByUser = (userId: string, name: string) => {
-    if (!absencesRef.current) return [];
-    setAbsences(
-      absencesRef.current.filter((absence) => absence.userId === userId),
-    );
-    setFilteredUser(name);
+    if (!absences) return;
+    setFilteredUser({
+      id: userId,
+      name,
+    });
   };
 
   const clearFilter = () => {
-    if (!absencesRef.current) return [];
-    setAbsences(absencesRef.current);
+    if (!absences) return;
     setFilteredUser(null);
   };
 
@@ -86,38 +114,21 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
       sortKey === key && sortDirection === "asc" ? "desc" : "asc";
     setSortKey(key);
     setSortDirection(direction);
-
-    const sorted = [...absences].sort((a, b) => {
-      const aVal = a[key];
-      const bVal = b[key];
-
-      if (key === "startDate" || key === "endDate") {
-        const aDate = parseDate(aVal.toString());
-        const bDate = parseDate(bVal.toString());
-        if (aDate < bDate) return direction === "asc" ? -1 : 1;
-        if (aDate > bDate) return direction === "asc" ? 1 : -1;
-        return 0;
-      } else {
-        if (aVal < bVal) return direction === "asc" ? -1 : 1;
-        if (aVal > bVal) return direction === "asc" ? 1 : -1;
-        return 0;
-      }
-    });
-
-    setAbsences(sorted);
   };
 
   useEffect(() => {
     fetchAbsences();
-  }, []);
+  }, [fetchAbsences]);
 
   return {
-    absences,
+    absences: sortedAndFilteredAbsences,
     error,
     loading,
     filterAbsencesByUser,
     clearFilter,
     filteredUser,
     sortBy,
+    sortKey,
+    sortDirection,
   };
 };

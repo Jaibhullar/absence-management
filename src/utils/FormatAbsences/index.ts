@@ -1,16 +1,22 @@
-import type { Absence, FormattedAbsence, FormattedAbsenceType } from "@/types";
+import type {
+  Absence,
+  AbsenceType,
+  FormattedAbsence,
+  FormattedAbsenceType,
+} from "@/types";
+
+const ABSENCE_TYPE_LABELS: Record<AbsenceType, FormattedAbsenceType> = {
+  ANNUAL_LEAVE: "Annual Leave",
+  SICKNESS: "Sickness",
+  MEDICAL: "Medical",
+};
 
 export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
   return absences.map((absence) => {
     const endDate = new Date(absence.startDate);
     endDate.setDate(endDate.getDate() + absence.days);
 
-    const formattedType: FormattedAbsenceType =
-      absence.absenceType === "ANNUAL_LEAVE"
-        ? "Annual Leave"
-        : absence.absenceType === "SICKNESS"
-          ? "Sickness"
-          : "Medical";
+    const formattedType = ABSENCE_TYPE_LABELS[absence.absenceType];
 
     return {
       id: absence.id,
@@ -26,7 +32,8 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
 };
 
 const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
+  const dateOnly = dateString.split("T")[0];
+  const date = new Date(dateOnly + "T00:00:00");
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

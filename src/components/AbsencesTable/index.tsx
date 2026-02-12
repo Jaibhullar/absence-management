@@ -12,6 +12,8 @@ export const AbsencesTable = () => {
     clearFilter,
     filteredUser,
     sortBy,
+    sortKey,
+    sortDirection,
   } = useAbsencesTable();
 
   return (
@@ -32,6 +34,8 @@ export const AbsencesTable = () => {
           error={error}
           filterAbsencesByUser={filterAbsencesByUser}
           sortBy={sortBy}
+          sortKey={sortKey}
+          sortDirection={sortDirection}
         />
       </div>
     </section>

@@ -15,7 +15,10 @@ describe("FilteringByUserBanner", () => {
 
     render(
       <FilteringByUserBanner
-        filteredUser="John Doe"
+        filteredUser={{
+          name: "John Doe",
+          id: "1",
+        }}
         clearFilter={mockClearFilter}
       />,
     );

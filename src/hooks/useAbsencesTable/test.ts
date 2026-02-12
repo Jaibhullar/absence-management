@@ -130,15 +130,15 @@ describe("useAbsenceTable", () => {
       );
     });
   });
-  it("should set conflicts to false when getAbsenceConflict fails", async () => {
+  it("should set conflicts to null when getAbsenceConflict fails", async () => {
     jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
     jest.mocked(getAbsenceConflict).mockRejectedValue(new Error());
 
     const { result } = renderHook(() => useAbsencesTable());
 
     await waitFor(() => {
-      expect(result.current.absences[0].conflicts).toBe(false);
-      expect(result.current.absences[1].conflicts).toBe(false);
+      expect(result.current.absences[0].conflicts).toBe(null);
+      expect(result.current.absences[1].conflicts).toBe(null);
     });
   });
   it("should filter absences by user", async () => {
@@ -149,7 +149,10 @@ describe("useAbsenceTable", () => {
     await waitFor(() => {
       result.current.filterAbsencesByUser("1", "John Doe");
       expect(result.current.absences).toEqual([mockFormattedAbsences[1]]);
-      expect(result.current.filteredUser).toBe("John Doe");
+      expect(result.current.filteredUser).toEqual({
+        name: "John Doe",
+        id: "1",
+      });
     });
   });
   it("should clear filter and show all absences", async () => {
@@ -160,7 +163,10 @@ describe("useAbsenceTable", () => {
     await waitFor(() => {
       result.current.filterAbsencesByUser("1", "John Doe");
       expect(result.current.absences).toEqual([mockFormattedAbsences[1]]);
-      expect(result.current.filteredUser).toBe("John Doe");
+      expect(result.current.filteredUser).toEqual({
+        name: "John Doe",
+        id: "1",
+      });
     });
 
     await waitFor(() => {

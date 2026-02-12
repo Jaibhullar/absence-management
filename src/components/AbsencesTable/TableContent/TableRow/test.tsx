@@ -3,6 +3,7 @@ import { TableRow } from ".";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const mockFormattedAbsence: FormattedAbsence = {
   id: 1,
@@ -20,11 +21,13 @@ const testIds = TableRow.testIds;
 
 export const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <table>
-      <tbody>
-        <tr>{children}</tr>
-      </tbody>
-    </table>
+    <TooltipProvider>
+      <table>
+        <tbody>
+          <tr>{children}</tr>
+        </tbody>
+      </table>
+    </TooltipProvider>
   );
 };
 

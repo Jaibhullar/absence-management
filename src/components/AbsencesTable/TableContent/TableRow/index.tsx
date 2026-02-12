@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { FormattedAbsence } from "@/types";
-import { AlertTriangleIcon } from "lucide-react";
+import { ConflictTooltip } from "./ConflictTooltip";
 
 const testIds = {
   employeeName: "employee-name-button",
@@ -51,11 +51,11 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
         )}
       </td>
       <td className="py-3">
+        {absence.conflicts === null && (
+          <span className="text-destructive">Unknown</span>
+        )}
         {absence.conflicts && (
-          <AlertTriangleIcon
-            className="text-destructive mx-auto"
-            data-testid={testIds.conflictAlert}
-          />
+          <ConflictTooltip testId={testIds.conflictAlert} />
         )}
       </td>
     </tr>

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const testIds = {
   tableSkeleton: "table-skeleton",
   errorMessage: "error-message",
+  noResultsMessage: "no-results-message",
 };
 
 export type TableContentProps = {
@@ -15,6 +16,8 @@ export type TableContentProps = {
   error: string | null;
   filterAbsencesByUser: (userId: string, name: string) => void;
   sortBy: (key: SortKey) => void;
+  sortKey: SortKey | null;
+  sortDirection: "asc" | "desc";
 };
 
 export const TableContent = ({
@@ -23,6 +26,8 @@ export const TableContent = ({
   error,
   filterAbsencesByUser,
   sortBy,
+  sortKey,
+  sortDirection,
 }: TableContentProps) => {
   if (loading) {
     return <TableSkeleton />;
@@ -40,17 +45,35 @@ export const TableContent = ({
 
   return (
     <table className="w-full border-collapse min-w-225 border-spacing-0">
-      <TableHeader sortBy={sortBy} />
+      <TableHeader
+        sortBy={sortBy}
+        sortKey={sortKey}
+        sortDirection={sortDirection}
+      />
       <tbody>
-        {absences.map((absence) => {
-          return (
-            <TableRow
-              key={absence.id}
-              absence={absence}
-              filterAbsenceByUser={filterAbsencesByUser}
-            />
-          );
-        })}
+        {absences.length === 0 ? (
+          <tr>
+            <td colSpan={7}>
+              {" "}
+              <p
+                className="my-6 text-center text-muted-foreground text-sm"
+                data-testid={testIds.noResultsMessage}
+              >
+                No results to show
+              </p>
+            </td>
+          </tr>
+        ) : (
+          absences.map((absence) => {
+            return (
+              <TableRow
+                key={absence.id}
+                absence={absence}
+                filterAbsenceByUser={filterAbsencesByUser}
+              />
+            );
+          })
+        )}
       </tbody>
     </table>
   );
