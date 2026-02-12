@@ -41,6 +41,7 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
       let formattedAbsences = formatAbsences(resp).sort((a, b) => {
         return parseDate(b.startDate) - parseDate(a.startDate);
       });
+
       formattedAbsences = await Promise.all(
         formattedAbsences.map(async (item) => {
           const conflicts = await fetchConflicts(item.id);
@@ -48,7 +49,8 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
         }),
       );
       setAbsences(formattedAbsences);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
       setError("There was an error fetching absences...");
     } finally {
       setLoading(false);
@@ -75,7 +77,13 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   } = useSortTable({ absences });
 
   useEffect(() => {
+    const controller = new AbortController();
+
     fetchAbsences();
+
+    return () => {
+      controller.abort();
+    };
   }, [fetchAbsences]);
 
   return {
