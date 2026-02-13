@@ -1,16 +1,12 @@
 import { getAbsences } from "@/services/getAbsences";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useAbsencesTable } from ".";
-import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import type { Absence, FormattedAbsence } from "@/types";
 
 jest.mock("@/services/getAbsences", () => ({
   getAbsences: jest.fn(),
 }));
 
-jest.mock("@/services/getAbsenceConflict", () => ({
-  getAbsenceConflict: jest.fn(),
-}));
 
 const mockAbsences: Absence[] = [
   {
@@ -40,7 +36,7 @@ const mockFormattedAbsences: FormattedAbsence[] = [
     employeeName: "Jane Smith",
     type: "Sickness",
     approved: false,
-    conflicts: false,
+
     days: 3,
   },
   {
@@ -51,7 +47,7 @@ const mockFormattedAbsences: FormattedAbsence[] = [
     employeeName: "John Doe",
     type: "Annual Leave",
     approved: true,
-    conflicts: false,
+
     days: 5,
   },
 ];
@@ -60,7 +56,6 @@ describe("useAbsenceTable", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getAbsences).mockResolvedValue([]);
-    jest.mocked(getAbsenceConflict).mockResolvedValue({ conflicts: false });
   });
   it('shoud call "getAbsences" on mount', async () => {
     renderHook(() => useAbsencesTable());
@@ -97,28 +92,6 @@ describe("useAbsenceTable", () => {
       expect(result.current.absences[1].id).toBe(1);
     });
   });
-  it("should fetch conflicts for each absence", async () => {
-    jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
-
-    renderHook(() => useAbsencesTable());
-
-    await waitFor(() => {
-      expect(jest.mocked(getAbsenceConflict)).toHaveBeenCalledTimes(2);
-      expect(jest.mocked(getAbsenceConflict)).toHaveBeenCalledWith(1);
-      expect(jest.mocked(getAbsenceConflict)).toHaveBeenCalledWith(2);
-    });
-  });
-  it("should set conflicts property on absences", async () => {
-    jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
-    jest.mocked(getAbsenceConflict).mockResolvedValue({ conflicts: true });
-
-    const { result } = renderHook(() => useAbsencesTable());
-
-    await waitFor(() => {
-      expect(result.current.absences[0].conflicts).toBe(true);
-      expect(result.current.absences[1].conflicts).toBe(true);
-    });
-  });
   it("should set error when getAbsences fails", async () => {
     jest.mocked(getAbsences).mockRejectedValue(new Error());
 
@@ -128,17 +101,6 @@ describe("useAbsenceTable", () => {
       expect(result.current.error).toBe(
         "There was an error fetching absences...",
       );
-    });
-  });
-  it("should set conflicts to null when getAbsenceConflict fails", async () => {
-    jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
-    jest.mocked(getAbsenceConflict).mockRejectedValue(new Error());
-
-    const { result } = renderHook(() => useAbsencesTable());
-
-    await waitFor(() => {
-      expect(result.current.absences[0].conflicts).toBe(null);
-      expect(result.current.absences[1].conflicts).toBe(null);
     });
   });
 });

@@ -4,6 +4,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useConflict } from "@/hooks/useConflict";
+
+jest.mock("@/hooks/useConflict", () => ({
+  useConflict: jest.fn(),
+}));
 
 const mockFormattedAbsence: FormattedAbsence = {
   id: 1,
@@ -14,7 +19,6 @@ const mockFormattedAbsence: FormattedAbsence = {
   employeeName: "John Doe",
   userId: "123",
   days: 4,
-  conflicts: true,
 };
 
 const testIds = TableRow.testIds;
@@ -23,9 +27,7 @@ export const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <TooltipProvider>
       <table>
-        <tbody>
-          <tr>{children}</tr>
-        </tbody>
+        <tbody>{children}</tbody>
       </table>
     </TooltipProvider>
   );
@@ -34,6 +36,9 @@ export const Wrapper = ({ children }: { children: React.ReactNode }) => {
 describe("<TableRow />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest
+      .mocked(useConflict)
+      .mockReturnValue({ conflicts: false, loading: false });
   });
   it("calls filterAbsenceByUser with correct parameters when employee name is clicked", async () => {
     const user = userEvent.setup();
@@ -44,7 +49,6 @@ describe("<TableRow />", () => {
           absence={mockFormattedAbsence}
           filterAbsenceByUser={filterAbsenceByUserMock}
         />
-        ,
       </Wrapper>,
     );
 
@@ -92,6 +96,9 @@ describe("<TableRow />", () => {
   });
   it("displays conflict alert when there are conflicts", () => {
     const filterAbsenceByUserMock = jest.fn();
+    jest
+      .mocked(useConflict)
+      .mockReturnValue({ conflicts: true, loading: false });
 
     render(
       <Wrapper>
@@ -108,10 +115,11 @@ describe("<TableRow />", () => {
   });
   it("does not display conflict alert when there are no conflicts", () => {
     const filterAbsenceByUserMock = jest.fn();
+
     render(
       <Wrapper>
         <TableRow
-          absence={{ ...mockFormattedAbsence, conflicts: false }}
+          absence={{ ...mockFormattedAbsence }}
           filterAbsenceByUser={filterAbsenceByUserMock}
         />
       </Wrapper>,

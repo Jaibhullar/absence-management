@@ -1,8 +1,8 @@
 import { TableRow } from "./TableRow";
 import { TableHeader } from "./TableHeader";
 import type { FormattedAbsence } from "@/types";
-import type { SortKey } from "@/hooks/useAbsencesTable";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { SortKey } from "@/hooks/useSortTable";
 
 const testIds = {
   tableSkeleton: "table-skeleton",
@@ -54,7 +54,6 @@ export const TableContent = ({
         {absences.length === 0 ? (
           <tr>
             <td colSpan={7}>
-              {" "}
               <p
                 className="my-6 text-center text-muted-foreground text-sm"
                 data-testid={testIds.noResultsMessage}

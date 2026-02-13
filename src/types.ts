@@ -24,7 +24,6 @@ export type FormattedAbsence = {
   days: number;
   type: FormattedAbsenceType;
   approved: boolean;
-  conflicts?: boolean | null;
 };
 
 export type FormattedAbsenceType = "Annual Leave" | "Sickness" | "Medical";

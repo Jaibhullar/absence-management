@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { FormattedAbsence } from "@/types";
 import { ConflictTooltip } from "./ConflictTooltip";
+import { useConflict } from "@/hooks/useConflict";
+import { Spinner } from "@/components/ui/spinner";
 
 const testIds = {
   employeeName: "employee-name-button",
@@ -15,6 +17,7 @@ export type TableRowProps = {
 };
 
 export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
+  const { conflicts, loading: conflictsLoading } = useConflict(absence.id);
   return (
     <tr className="text-center border-t border-b transition-colors hover:bg-secondary text-sm">
       <td className="py-3">
@@ -51,10 +54,13 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
         )}
       </td>
       <td className="py-3">
-        {absence.conflicts === null && (
+        {conflictsLoading && (
+          <Spinner className="justify-self-center text-primary" />
+        )}
+        {!conflictsLoading && conflicts === null && (
           <span className="text-destructive">Unknown</span>
         )}
-        {absence.conflicts && (
+        {!conflictsLoading && conflicts && (
           <ConflictTooltip testId={testIds.conflictAlert} />
         )}
       </td>

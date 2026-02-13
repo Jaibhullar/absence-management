@@ -1,4 +1,4 @@
-import type { SortKey } from "@/hooks/useAbsencesTable";
+import type { SortKey } from "@/hooks/useSortTable";
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
 
 type SortableCellProps = {
@@ -42,37 +42,27 @@ export const TableHeader = ({
     <thead className="sticky top-0 z-10 bg-white">
       <tr className="border-b">
         <SortableCell
-          sortBy={() => {
-            sortBy("employeeName");
-          }}
+          sortBy={() => sortBy("employeeName")}
           text="Employee"
           direction={sortKey === "employeeName" ? sortDirection : undefined}
         />
         <SortableCell
-          sortBy={() => {
-            sortBy("startDate");
-          }}
+          sortBy={() => sortBy("startDate")}
           text="Start Date"
           direction={sortKey === "startDate" ? sortDirection : undefined}
         />
         <SortableCell
-          sortBy={() => {
-            sortBy("endDate");
-          }}
+          sortBy={() => sortBy("endDate")}
           text="End Date"
           direction={sortKey === "endDate" ? sortDirection : undefined}
         />
         <SortableCell
-          sortBy={() => {
-            sortBy("days");
-          }}
+          sortBy={() => sortBy("days")}
           text="Days"
           direction={sortKey === "days" ? sortDirection : undefined}
-        />{" "}
+        />
         <SortableCell
-          sortBy={() => {
-            sortBy("type");
-          }}
+          sortBy={() => sortBy("type")}
           text="Type"
           direction={sortKey === "type" ? sortDirection : undefined}
         />

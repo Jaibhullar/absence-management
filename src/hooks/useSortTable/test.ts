@@ -2,6 +2,10 @@ import type { FormattedAbsence } from "@/types";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useSortTable } from ".";
 
+jest.mock("@/services/getAbsences", () => ({
+  getAbsences: jest.fn(),
+}));
+
 const mockAbsences: FormattedAbsence[] = [
   {
     id: 2,
@@ -11,7 +15,6 @@ const mockAbsences: FormattedAbsence[] = [
     employeeName: "Jane Smith",
     type: "Sickness",
     approved: false,
-    conflicts: false,
     days: 3,
   },
   {
@@ -22,7 +25,6 @@ const mockAbsences: FormattedAbsence[] = [
     employeeName: "John Doe",
     type: "Annual Leave",
     approved: true,
-    conflicts: false,
     days: 5,
   },
 ];

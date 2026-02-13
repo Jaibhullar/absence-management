@@ -1,18 +1,13 @@
-import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { getAbsences } from "@/services/getAbsences";
 import type { FormattedAbsence } from "@/types";
 import { formatAbsences } from "@/utils/formatAbsences";
 import { parseDate } from "@/utils/parseDate";
-import { useCallback, useEffect, useState } from "react";
-import { useSortTable } from "../useSortTable";
-
-export type SortKey =
-  | "employeeName"
-  | "startDate"
-  | "endDate"
-  | "type"
-  | "days";
-export type SortDirection = "asc" | "desc";
+import { useEffect, useState } from "react";
+import {
+  useSortTable,
+  type SortDirection,
+  type SortKey,
+} from "../useSortTable";
 
 export type useAbsencesTableResponse = {
   absences: FormattedAbsence[];
@@ -31,41 +26,6 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchAbsences = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const resp = await getAbsences();
-
-      let formattedAbsences = formatAbsences(resp).sort((a, b) => {
-        return parseDate(b.startDate) - parseDate(a.startDate);
-      });
-
-      formattedAbsences = await Promise.all(
-        formattedAbsences.map(async (item) => {
-          const conflicts = await fetchConflicts(item.id);
-          return { ...item, conflicts };
-        }),
-      );
-      setAbsences(formattedAbsences);
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      setError("There was an error fetching absences...");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchConflicts = async (absenceId: number) => {
-    try {
-      const { conflicts } = await getAbsenceConflict(absenceId);
-      return conflicts;
-    } catch {
-      return null;
-    }
-  };
-
   const {
     filterAbsencesByUser,
     clearFilter,
@@ -77,14 +37,26 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   } = useSortTable({ absences });
 
   useEffect(() => {
-    const controller = new AbortController();
+    const fetchAbsences = async () => {
+      setLoading(true);
+      setError(null);
 
-    fetchAbsences();
+      try {
+        const resp = await getAbsences();
 
-    return () => {
-      controller.abort();
+        const formattedAbsences = formatAbsences(resp).sort((a, b) => {
+          return parseDate(b.startDate) - parseDate(a.startDate);
+        });
+
+        setAbsences(formattedAbsences);
+      } catch {
+        setError("There was an error fetching absences...");
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [fetchAbsences]);
+    fetchAbsences();
+  }, []);
 
   return {
     absences: sortedAndFilteredAbsences,

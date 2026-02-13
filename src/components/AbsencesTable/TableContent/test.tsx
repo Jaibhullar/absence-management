@@ -2,6 +2,10 @@ import "@testing-library/jest-dom";
 import { TableContent, type TableContentProps } from ".";
 import { render, screen } from "@testing-library/react";
 
+jest.mock("@/services/getAbsenceConflict", () => ({
+  getAbsenceConflict: jest.fn(),
+}));
+
 const testIds = TableContent.testIds;
 
 const defaultProps: TableContentProps = {
