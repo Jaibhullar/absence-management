@@ -15,8 +15,10 @@ A React application for managing and viewing employee absences with conflict det
 
 - **React 19** with TypeScript
 - **Vite** for development and bundling
+- **React Query** for data fetching, caching, and server state management
 - **Tailwind CSS 4** for styling
-- **SHADCN UI** for component library and theming
+- **Shadcn UI** for component library and theming
+- **Radix UI** for accessible primitives
 - **date-fns** for date manipulation
 - **Jest** + **React Testing Library** for testing
 
@@ -76,8 +78,9 @@ src/
 │   ├── Header/
 │   └── ui/                  # Reusable UI components (shadcn)
 ├── hooks/
-│   ├── useAbsencesTable/    # Table data fetching & state
-│   ├── useConflict/         # Per-row conflict fetching
+│   ├── useAbsences/         # Absences data fetching (React Query)
+│   ├── useAbsencesTable/    # Table state management
+│   ├── useConflict/         # Per-row conflict fetching (React Query)
 │   └── useSortTable/        # Sorting & filtering logic
 ├── services/
 │   ├── getAbsences/         # Fetch absences API

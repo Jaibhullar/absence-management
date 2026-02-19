@@ -2,11 +2,25 @@ import { getAbsences } from "@/services/getAbsences";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useAbsencesTable } from ".";
 import type { Absence, FormattedAbsence } from "@/types";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 
 jest.mock("@/services/getAbsences", () => ({
   getAbsences: jest.fn(),
 }));
 
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false, // Don't retry in tests
+      },
+    },
+  });
+  return ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
 
 const mockAbsences: Absence[] = [
   {
@@ -58,14 +72,16 @@ describe("useAbsenceTable", () => {
     jest.mocked(getAbsences).mockResolvedValue([]);
   });
   it('shoud call "getAbsences" on mount', async () => {
-    renderHook(() => useAbsencesTable());
+    renderHook(() => useAbsencesTable(), { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(jest.mocked(getAbsences)).toHaveBeenCalled();
     });
   });
   it("should set loading to true while fetching and false after", async () => {
-    const { result } = renderHook(() => useAbsencesTable());
+    const { result } = renderHook(() => useAbsencesTable(), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.loading).toBe(true);
 
@@ -76,7 +92,9 @@ describe("useAbsenceTable", () => {
   it("should return formatted absences", async () => {
     jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
 
-    const { result } = renderHook(() => useAbsencesTable());
+    const { result } = renderHook(() => useAbsencesTable(), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => {
       expect(result.current.absences).toEqual(mockFormattedAbsences);
@@ -85,7 +103,9 @@ describe("useAbsenceTable", () => {
   it("should sort absences by start date in descending order", async () => {
     jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
 
-    const { result } = renderHook(() => useAbsencesTable());
+    const { result } = renderHook(() => useAbsencesTable(), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => {
       expect(result.current.absences[0].id).toBe(2);
@@ -95,7 +115,9 @@ describe("useAbsenceTable", () => {
   it("should set error when getAbsences fails", async () => {
     jest.mocked(getAbsences).mockRejectedValue(new Error());
 
-    const { result } = renderHook(() => useAbsencesTable());
+    const { result } = renderHook(() => useAbsencesTable(), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => {
       expect(result.current.error).toBe(

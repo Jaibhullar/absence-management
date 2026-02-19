@@ -38,7 +38,7 @@ describe("<TableRow />", () => {
     jest.clearAllMocks();
     jest
       .mocked(useConflict)
-      .mockReturnValue({ conflicts: false, loading: false });
+      .mockReturnValue({ conflicts: false, loading: false, error: false });
   });
   it("calls filterAbsenceByUser with correct parameters when employee name is clicked", async () => {
     const user = userEvent.setup();
@@ -98,7 +98,7 @@ describe("<TableRow />", () => {
     const filterAbsenceByUserMock = jest.fn();
     jest
       .mocked(useConflict)
-      .mockReturnValue({ conflicts: true, loading: false });
+      .mockReturnValue({ conflicts: true, loading: false, error: false });
 
     render(
       <Wrapper>

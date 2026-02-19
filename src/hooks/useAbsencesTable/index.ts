@@ -1,13 +1,10 @@
-import { getAbsences } from "@/services/getAbsences";
 import type { FormattedAbsence } from "@/types";
-import { formatAbsences } from "@/utils/formatAbsences";
-import { parseDate } from "@/utils/parseDate";
-import { useEffect, useState } from "react";
 import {
   useSortTable,
   type SortDirection,
   type SortKey,
 } from "../useSortTable";
+import { useAbsences } from "../useAbsences";
 
 export type useAbsencesTableResponse = {
   absences: FormattedAbsence[];
@@ -22,9 +19,7 @@ export type useAbsencesTableResponse = {
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
-  const [absences, setAbsences] = useState<FormattedAbsence[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: absences = [], isError, isLoading: loading } = useAbsences();
 
   const {
     filterAbsencesByUser,
@@ -36,31 +31,9 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     sortedAndFilteredAbsences,
   } = useSortTable({ absences });
 
-  useEffect(() => {
-    const fetchAbsences = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const resp = await getAbsences();
-
-        const formattedAbsences = formatAbsences(resp).sort((a, b) => {
-          return parseDate(b.startDate) - parseDate(a.startDate);
-        });
-
-        setAbsences(formattedAbsences);
-      } catch {
-        setError("There was an error fetching absences...");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAbsences();
-  }, []);
-
   return {
     absences: sortedAndFilteredAbsences,
-    error,
+    error: isError ? "There was an error fetching absences..." : null,
     loading,
     filterAbsencesByUser,
     clearFilter,

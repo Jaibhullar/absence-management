@@ -1,26 +1,21 @@
 import { getAbsenceConflict } from "@/services/getAbsenceConflict";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export const useConflict = (absenceId: number) => {
-  const [conflicts, setConflicts] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
+export type useConflictResponse = {
+  conflicts: boolean | null;
+  loading: boolean;
+  error: boolean;
+};
 
-  useEffect(() => {
-    const fetchConflict = async () => {
-      try {
-        const { conflicts } = await getAbsenceConflict(absenceId);
+export const useConflict = (absenceId: number): useConflictResponse => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["conflict", absenceId],
+    queryFn: () => getAbsenceConflict(absenceId),
+  });
 
-        setConflicts(conflicts);
-      } catch {
-        console.log(`Error fetching conflict for absence ${absenceId}`);
-        setConflicts(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchConflict();
-  }, [absenceId]);
-
-  return { conflicts, loading };
+  return {
+    conflicts: isError ? null : (data?.conflicts ?? null),
+    loading: isLoading,
+    error: isError,
+  };
 };
