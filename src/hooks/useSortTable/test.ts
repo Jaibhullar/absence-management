@@ -63,7 +63,7 @@ describe("useSortTable", () => {
     });
 
     await waitFor(() => {
-      result.current.clearFilter();
+      result.current.clearFilterAbsencesByUser();
       expect(result.current.sortedAndFilteredAbsences).toEqual(mockAbsences);
       expect(result.current.filteredUser).toBeNull();
     });
@@ -74,7 +74,7 @@ describe("useSortTable", () => {
     );
 
     await waitFor(() => {
-      result.current.sortBy("employeeName");
+      result.current.sortAbsencesBy("employeeName");
       expect(result.current.sortedAndFilteredAbsences[0].employeeName).toBe(
         "Jane Smith",
       );
@@ -84,7 +84,7 @@ describe("useSortTable", () => {
     });
 
     await waitFor(() => {
-      result.current.sortBy("employeeName");
+      result.current.sortAbsencesBy("employeeName");
       expect(result.current.sortedAndFilteredAbsences[0].employeeName).toBe(
         "John Doe",
       );
@@ -99,7 +99,7 @@ describe("useSortTable", () => {
     );
 
     await waitFor(() => {
-      result.current.sortBy("startDate");
+      result.current.sortAbsencesBy("startDate");
       expect(result.current.sortedAndFilteredAbsences[0].startDate).toBe(
         "Jan 1, 2026",
       );
@@ -109,7 +109,7 @@ describe("useSortTable", () => {
     });
 
     await waitFor(() => {
-      result.current.sortBy("startDate");
+      result.current.sortAbsencesBy("startDate");
       expect(result.current.sortedAndFilteredAbsences[1].startDate).toBe(
         "Jan 1, 2026",
       );
@@ -124,7 +124,7 @@ describe("useSortTable", () => {
     );
 
     await waitFor(() => {
-      result.current.sortBy("endDate");
+      result.current.sortAbsencesBy("endDate");
       expect(result.current.sortedAndFilteredAbsences[0].endDate).toBe(
         "Jan 6, 2026",
       );
@@ -133,7 +133,7 @@ describe("useSortTable", () => {
       );
     });
     await waitFor(() => {
-      result.current.sortBy("endDate");
+      result.current.sortAbsencesBy("endDate");
       expect(result.current.sortedAndFilteredAbsences[1].endDate).toBe(
         "Jan 6, 2026",
       );
@@ -148,14 +148,14 @@ describe("useSortTable", () => {
     );
 
     await waitFor(() => {
-      result.current.sortBy("type");
+      result.current.sortAbsencesBy("type");
       expect(result.current.sortedAndFilteredAbsences[0].type).toBe(
         "Annual Leave",
       );
       expect(result.current.sortedAndFilteredAbsences[1].type).toBe("Sickness");
     });
     await waitFor(() => {
-      result.current.sortBy("type");
+      result.current.sortAbsencesBy("type");
       expect(result.current.sortedAndFilteredAbsences[1].type).toBe(
         "Annual Leave",
       );
@@ -168,12 +168,12 @@ describe("useSortTable", () => {
     );
 
     await waitFor(() => {
-      result.current.sortBy("days");
+      result.current.sortAbsencesBy("days");
       expect(result.current.sortedAndFilteredAbsences[0].days).toBe(3);
       expect(result.current.sortedAndFilteredAbsences[1].days).toBe(5);
     });
     await waitFor(() => {
-      result.current.sortBy("days");
+      result.current.sortAbsencesBy("days");
       expect(result.current.sortedAndFilteredAbsences[1].days).toBe(3);
       expect(result.current.sortedAndFilteredAbsences[0].days).toBe(5);
     });

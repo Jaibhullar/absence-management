@@ -1,70 +1,93 @@
-import type { SortKey } from "@/hooks/useSortTable";
+import type {
+  AbsenceSortDirection,
+  AbsenceSortKey,
+} from "@/hooks/useSortTable";
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
 
 type SortableCellProps = {
-  sortBy: () => void;
+  sortAbsencesBy: () => void;
   text: string;
-  direction?: "asc" | "desc";
+  absenceSortDirection?: AbsenceSortDirection;
 };
 
-const SortIcon = ({ direction }: { direction?: "asc" | "desc" }) => {
-  if (!direction) return <ArrowUpDown className="h-4 w-4"></ArrowUpDown>;
-  if (direction === "asc") return <ArrowUpIcon className="h-4 w-4" />;
+const SortIcon = ({
+  absenceSortDirection,
+}: {
+  absenceSortDirection?: AbsenceSortDirection;
+}) => {
+  if (!absenceSortDirection)
+    return <ArrowUpDown className="h-4 w-4"></ArrowUpDown>;
+  if (absenceSortDirection === "asc")
+    return <ArrowUpIcon className="h-4 w-4" />;
   return <ArrowDownIcon className="h-4 w-4" />;
 };
 
-const SortableCell = ({ sortBy, text, direction }: SortableCellProps) => {
+const SortableCell = ({
+  sortAbsencesBy,
+  text,
+  absenceSortDirection,
+}: SortableCellProps) => {
   return (
     <th className="py-3">
       <button
         className="mx-auto flex items-center gap-2 justify-center cursor-pointer"
-        onClick={sortBy}
+        onClick={sortAbsencesBy}
       >
         <span>{text}</span>
-        <SortIcon direction={direction}></SortIcon>
+        <SortIcon absenceSortDirection={absenceSortDirection}></SortIcon>
       </button>
     </th>
   );
 };
 
 export type TableHeaderProps = {
-  sortBy: (key: SortKey) => void;
-  sortKey: SortKey | null;
-  sortDirection: "asc" | "desc";
+  sortAbsencesBy: (key: AbsenceSortKey) => void;
+  absenceSortKey: AbsenceSortKey | null;
+  absenceSortDirection: AbsenceSortDirection;
 };
 
 export const TableHeader = ({
-  sortBy,
-  sortKey,
-  sortDirection,
+  sortAbsencesBy,
+  absenceSortKey,
+  absenceSortDirection,
 }: TableHeaderProps) => {
   return (
     <thead className="sticky top-0 z-10 bg-white">
       <tr className="border-b">
         <SortableCell
-          sortBy={() => sortBy("employeeName")}
+          sortAbsencesBy={() => sortAbsencesBy("employeeName")}
           text="Employee"
-          direction={sortKey === "employeeName" ? sortDirection : undefined}
+          absenceSortDirection={
+            absenceSortKey === "employeeName" ? absenceSortDirection : undefined
+          }
         />
         <SortableCell
-          sortBy={() => sortBy("startDate")}
+          sortAbsencesBy={() => sortAbsencesBy("startDate")}
           text="Start Date"
-          direction={sortKey === "startDate" ? sortDirection : undefined}
+          absenceSortDirection={
+            absenceSortKey === "startDate" ? absenceSortDirection : undefined
+          }
         />
         <SortableCell
-          sortBy={() => sortBy("endDate")}
+          sortAbsencesBy={() => sortAbsencesBy("endDate")}
           text="End Date"
-          direction={sortKey === "endDate" ? sortDirection : undefined}
+          absenceSortDirection={
+            absenceSortKey === "endDate" ? absenceSortDirection : undefined
+          }
         />
         <SortableCell
-          sortBy={() => sortBy("days")}
+          sortAbsencesBy={() => sortAbsencesBy("days")}
           text="Days"
-          direction={sortKey === "days" ? sortDirection : undefined}
+          absenceSortDirection={
+            absenceSortKey === "days" ? absenceSortDirection : undefined
+          }
         />
         <SortableCell
-          sortBy={() => sortBy("type")}
+          sortAbsencesBy={() => sortAbsencesBy("type")}
           text="Type"
-          direction={sortKey === "type" ? sortDirection : undefined}
+          absenceSortDirection={
+            absenceSortKey === "type" ? absenceSortDirection : undefined
+          }
         />
         <th className="py-3">
           <span>Status</span>

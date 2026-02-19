@@ -6,18 +6,18 @@ import {
 } from "@/components/ui/tooltip";
 import { AlertTriangleIcon } from "lucide-react";
 
-export type ConflictTooltipProps = {
-  testId?: string;
+const testIds = {
+  conflictIcon: "conflict-icon",
 };
 
-export const ConflictTooltip = ({ testId }: ConflictTooltipProps) => {
+export const ConflictTooltip = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button variant="ghost">
           <AlertTriangleIcon
             className="text-destructive mx-auto size-5"
-            data-testid={testId}
+            data-testid={testIds.conflictIcon}
           />
         </Button>
       </TooltipTrigger>
@@ -27,3 +27,5 @@ export const ConflictTooltip = ({ testId }: ConflictTooltipProps) => {
     </Tooltip>
   );
 };
+
+ConflictTooltip.testIds = testIds;

@@ -1,45 +1,62 @@
 import type { FormattedAbsence } from "@/types";
 import {
   useSortTable,
-  type SortDirection,
-  type SortKey,
+  type AbsenceSortDirection,
+  type AbsenceSortKey,
 } from "../useSortTable";
-import { useAbsences } from "../useAbsences";
+import { getAbsences } from "@/services/getAbsences";
+import { formatAbsences } from "@/utils/formatAbsences";
+import { parseDate } from "@/utils/parseDate";
+import { useQuery } from "@tanstack/react-query";
+
+export const ABSENCES_QUERY_KEY = ["absences"];
 
 export type useAbsencesTableResponse = {
   absences: FormattedAbsence[];
-  error: string | null;
-  loading: boolean;
+  absencesError: string | null;
+  absencesLoading: boolean;
   filterAbsencesByUser: (userId: string, name: string) => void;
-  clearFilter: () => void;
+  clearFilterAbsencesByUser: () => void;
   filteredUser: { name: string; id: string } | null;
-  sortBy: (key: SortKey) => void;
-  sortKey: SortKey | null;
-  sortDirection: SortDirection;
+  sortAbsencesBy: (key: AbsenceSortKey) => void;
+  absenceSortKey: AbsenceSortKey | null;
+  absenceSortDirection: AbsenceSortDirection;
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
-  const { data: absences = [], isError, isLoading: loading } = useAbsences();
+  const {
+    data: absences = [],
+    isError,
+    isLoading: absencesLoading,
+  } = useQuery({
+    queryKey: ABSENCES_QUERY_KEY,
+    queryFn: async () => {
+      const resp = await getAbsences();
+      return formatAbsences(resp).sort((a, b) => {
+        return parseDate(b.startDate) - parseDate(a.startDate);
+      });
+    },
+  });
 
   const {
     filterAbsencesByUser,
-    clearFilter,
+    clearFilterAbsencesByUser,
     filteredUser,
-    sortBy,
-    sortKey,
-    sortDirection,
+    sortAbsencesBy,
+    absenceSortKey,
+    absenceSortDirection,
     sortedAndFilteredAbsences,
   } = useSortTable({ absences });
 
   return {
     absences: sortedAndFilteredAbsences,
-    error: isError ? "There was an error fetching absences..." : null,
-    loading,
+    absencesError: isError ? "There was an error fetching absences..." : null,
+    absencesLoading,
     filterAbsencesByUser,
-    clearFilter,
+    clearFilterAbsencesByUser,
     filteredUser,
-    sortBy,
-    sortKey,
-    sortDirection,
+    sortAbsencesBy,
+    absenceSortKey,
+    absenceSortDirection,
   };
 };

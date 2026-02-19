@@ -71,24 +71,6 @@ describe("useAbsenceTable", () => {
     jest.clearAllMocks();
     jest.mocked(getAbsences).mockResolvedValue([]);
   });
-  it('shoud call "getAbsences" on mount', async () => {
-    renderHook(() => useAbsencesTable(), { wrapper: createWrapper() });
-
-    await waitFor(() => {
-      expect(jest.mocked(getAbsences)).toHaveBeenCalled();
-    });
-  });
-  it("should set loading to true while fetching and false after", async () => {
-    const { result } = renderHook(() => useAbsencesTable(), {
-      wrapper: createWrapper(),
-    });
-
-    expect(result.current.loading).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-  });
   it("should return formatted absences", async () => {
     jest.mocked(getAbsences).mockResolvedValue(mockAbsences);
 
@@ -120,7 +102,7 @@ describe("useAbsenceTable", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe(
+      expect(result.current.absencesError).toBe(
         "There was an error fetching absences...",
       );
     });

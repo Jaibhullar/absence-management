@@ -2,13 +2,13 @@ import type { FormattedAbsence } from "@/types";
 import { parseDate } from "@/utils/parseDate";
 import { useMemo, useState } from "react";
 
-export type SortKey =
+export type AbsenceSortKey =
   | "employeeName"
   | "startDate"
   | "endDate"
   | "type"
   | "days";
-export type SortDirection = "asc" | "desc";
+export type AbsenceSortDirection = "asc" | "desc";
 
 export type useSortTableParams = {
   absences: FormattedAbsence[];
@@ -16,11 +16,11 @@ export type useSortTableParams = {
 
 export type useSortTableResponse = {
   filterAbsencesByUser: (userId: string, name: string) => void;
-  clearFilter: () => void;
+  clearFilterAbsencesByUser: () => void;
   filteredUser: { name: string; id: string } | null;
-  sortBy: (key: SortKey) => void;
-  sortKey: SortKey | null;
-  sortDirection: SortDirection;
+  sortAbsencesBy: (key: AbsenceSortKey) => void;
+  absenceSortKey: AbsenceSortKey | null;
+  absenceSortDirection: AbsenceSortDirection;
   sortedAndFilteredAbsences: FormattedAbsence[];
 };
 
@@ -31,35 +31,38 @@ export const useSortTable = ({
     name: string;
     id: string;
   } | null>(null);
-  const [sortKey, setSortKey] = useState<SortKey | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [absenceSortKey, setAbsenceSortKey] = useState<AbsenceSortKey | null>(
+    null,
+  );
+  const [absenceSortDirection, setAbsenceSortDirection] =
+    useState<AbsenceSortDirection>("asc");
 
   const sortedAndFilteredAbsences = useMemo(() => {
     let result = absences.filter(
       (a) => !filteredUser || a.userId === filteredUser.id,
     );
 
-    if (sortKey) {
+    if (absenceSortKey) {
       result = [...result].sort((a, b) => {
-        const aVal = a[sortKey];
-        const bVal = b[sortKey];
+        const aVal = a[absenceSortKey];
+        const bVal = b[absenceSortKey];
 
-        if (sortKey === "startDate" || sortKey === "endDate") {
+        if (absenceSortKey === "startDate" || absenceSortKey === "endDate") {
           const aDate = parseDate(aVal.toString());
           const bDate = parseDate(bVal.toString());
-          if (aDate < bDate) return sortDirection === "asc" ? -1 : 1;
-          if (aDate > bDate) return sortDirection === "asc" ? 1 : -1;
+          if (aDate < bDate) return absenceSortDirection === "asc" ? -1 : 1;
+          if (aDate > bDate) return absenceSortDirection === "asc" ? 1 : -1;
           return 0;
         } else {
-          if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-          if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+          if (aVal < bVal) return absenceSortDirection === "asc" ? -1 : 1;
+          if (aVal > bVal) return absenceSortDirection === "asc" ? 1 : -1;
           return 0;
         }
       });
     }
 
     return result;
-  }, [absences, filteredUser, sortKey, sortDirection]);
+  }, [absences, filteredUser, absenceSortKey, absenceSortDirection]);
 
   const filterAbsencesByUser = (userId: string, name: string) => {
     if (!absences) return;
@@ -69,25 +72,25 @@ export const useSortTable = ({
     });
   };
 
-  const clearFilter = () => {
+  const clearFilterAbsencesByUser = () => {
     if (!absences) return;
     setFilteredUser(null);
   };
 
-  const sortBy = (key: SortKey) => {
+  const sortAbsencesBy = (key: AbsenceSortKey) => {
     const direction =
-      sortKey === key && sortDirection === "asc" ? "desc" : "asc";
-    setSortKey(key);
-    setSortDirection(direction);
+      absenceSortKey === key && absenceSortDirection === "asc" ? "desc" : "asc";
+    setAbsenceSortKey(key);
+    setAbsenceSortDirection(direction);
   };
 
   return {
     filterAbsencesByUser,
-    clearFilter,
+    clearFilterAbsencesByUser,
     filteredUser,
-    sortBy,
-    sortKey,
-    sortDirection,
+    sortAbsencesBy,
+    absenceSortKey,
+    absenceSortDirection,
     sortedAndFilteredAbsences,
   };
 };

@@ -1,10 +1,10 @@
 import { CalendarIcon } from "lucide-react";
-import { Container } from "../Container";
+import { SectionContainer } from "../Container";
 
 export const Header = () => {
   return (
     <div className="py-4">
-      <Container className="flex items-center gap-3">
+      <SectionContainer className="flex items-center gap-3">
         <div className="p-2 rounded-md bg-primary w-fit">
           <CalendarIcon className="w-7 h-7 text-white" />
         </div>
@@ -14,7 +14,7 @@ export const Header = () => {
             Track and manage employee absences
           </p>
         </div>
-      </Container>
+      </SectionContainer>
     </div>
   );
 };

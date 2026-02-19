@@ -9,9 +9,9 @@ describe("FilteringByUserBanner", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it("calls clearFilter when the button is clicked", async () => {
+  it("calls clearFilterAbsencesByUser when the button is clicked", async () => {
     const user = userEvent.setup();
-    const mockClearFilter = jest.fn();
+    const mockClearFilterAbsencesByUser = jest.fn();
 
     render(
       <FilteringByUserBanner
@@ -19,7 +19,7 @@ describe("FilteringByUserBanner", () => {
           name: "John Doe",
           id: "1",
         }}
-        clearFilter={mockClearFilter}
+        clearFilterAbsencesByUser={mockClearFilterAbsencesByUser}
       />,
     );
 
@@ -29,6 +29,6 @@ describe("FilteringByUserBanner", () => {
 
     await user.click(clearFiltersButton);
 
-    expect(mockClearFilter).toHaveBeenCalled();
+    expect(mockClearFilterAbsencesByUser).toHaveBeenCalled();
   });
 });

@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useConflict } from "@/hooks/useConflict";
+import { ConflictTooltip } from "./ConflictTooltip";
 
 jest.mock("@/hooks/useConflict", () => ({
   useConflict: jest.fn(),
@@ -21,7 +22,8 @@ const mockFormattedAbsence: FormattedAbsence = {
   days: 4,
 };
 
-const testIds = TableRow.testIds;
+const tableRowTestIds = TableRow.testIds;
+const conflictTooltipTestIds = ConflictTooltip.testIds;
 
 export const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -52,7 +54,7 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const employeeNameButton = screen.getByTestId(testIds.employeeName);
+    const employeeNameButton = screen.getByTestId(tableRowTestIds.employeeName);
 
     await user.click(employeeNameButton);
 
@@ -72,7 +74,7 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const badge = screen.getByTestId(testIds.badge);
+    const badge = screen.getByTestId(tableRowTestIds.badge);
 
     expect(badge).toHaveTextContent("Approved");
     expect(badge).toHaveClass("bg-green-300 text-green-800");
@@ -89,7 +91,7 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const badge = screen.getByTestId(testIds.badge);
+    const badge = screen.getByTestId(tableRowTestIds.badge);
 
     expect(badge).toHaveTextContent("Pending");
     expect(badge).toHaveClass("bg-amber-300 text-amber-800");
@@ -109,7 +111,9 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const conflictAlert = screen.getByTestId(testIds.conflictAlert);
+    const conflictAlert = screen.getByTestId(
+      conflictTooltipTestIds.conflictIcon,
+    );
 
     expect(conflictAlert).toBeInTheDocument();
   });
@@ -125,7 +129,9 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const conflictAlert = screen.queryByTestId(testIds.conflictAlert);
+    const conflictAlert = screen.queryByTestId(
+      conflictTooltipTestIds.conflictIcon,
+    );
     expect(conflictAlert).not.toBeInTheDocument();
   });
 });

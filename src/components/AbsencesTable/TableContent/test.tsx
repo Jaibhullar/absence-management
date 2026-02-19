@@ -10,24 +10,26 @@ const testIds = TableContent.testIds;
 
 const defaultProps: TableContentProps = {
   absences: [],
-  loading: false,
-  error: null,
+  absencesLoading: false,
+  absencesError: null,
   filterAbsencesByUser: jest.fn(),
-  sortBy: jest.fn(),
-  sortKey: null,
-  sortDirection: "asc",
+  sortAbsencesBy: jest.fn(),
+  absenceSortKey: null,
+  absenceSortDirection: "asc",
 };
 
 describe("TableContent", () => {
-  it("renders TableSkeleton when loading is true", () => {
-    render(<TableContent {...defaultProps} loading={true} />);
+  it("renders TableSkeleton when absencesLoading is true", () => {
+    render(<TableContent {...defaultProps} absencesLoading={true} />);
 
     const skeleton = screen.getByTestId(testIds.tableSkeleton);
 
     expect(skeleton).toBeInTheDocument();
   });
   it("renders error message when error is not null", () => {
-    render(<TableContent {...defaultProps} error={"Error fetching data"} />);
+    render(
+      <TableContent {...defaultProps} absencesError={"Error fetching data"} />,
+    );
 
     const errorMessage = screen.getByTestId(testIds.errorMessage);
 

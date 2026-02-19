@@ -6,7 +6,7 @@ export type FilteringByUserBannerProps = {
     name: string;
     id: string;
   };
-  clearFilter: () => void;
+  clearFilterAbsencesByUser: () => void;
 };
 
 const testIds = {
@@ -15,7 +15,7 @@ const testIds = {
 
 export const FilteringByUserBanner = ({
   filteredUser,
-  clearFilter,
+  clearFilterAbsencesByUser,
 }: FilteringByUserBannerProps) => {
   return (
     <div className="flex items-center justify-between bg-secondary text-secondary-foreground rounded-md p-2 text-sm">
@@ -27,7 +27,7 @@ export const FilteringByUserBanner = ({
         variant={"outline"}
         size={"icon-sm"}
         className="cursor-pointer"
-        onClick={clearFilter}
+        onClick={clearFilterAbsencesByUser}
         data-testid={testIds.clearFiltersButton}
       >
         <X></X>

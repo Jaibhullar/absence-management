@@ -2,7 +2,10 @@ import { TableRow } from "./TableRow";
 import { TableHeader } from "./TableHeader";
 import type { FormattedAbsence } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { SortKey } from "@/hooks/useSortTable";
+import type {
+  AbsenceSortDirection,
+  AbsenceSortKey,
+} from "@/hooks/useSortTable";
 
 const testIds = {
   tableSkeleton: "table-skeleton",
@@ -12,33 +15,33 @@ const testIds = {
 
 export type TableContentProps = {
   absences: FormattedAbsence[];
-  loading: boolean;
-  error: string | null;
+  absencesLoading: boolean;
+  absencesError: string | null;
   filterAbsencesByUser: (userId: string, name: string) => void;
-  sortBy: (key: SortKey) => void;
-  sortKey: SortKey | null;
-  sortDirection: "asc" | "desc";
+  sortAbsencesBy: (key: AbsenceSortKey) => void;
+  absenceSortKey: AbsenceSortKey | null;
+  absenceSortDirection: AbsenceSortDirection;
 };
 
 export const TableContent = ({
   absences,
-  loading,
-  error,
+  absencesLoading,
+  absencesError,
   filterAbsencesByUser,
-  sortBy,
-  sortKey,
-  sortDirection,
+  sortAbsencesBy,
+  absenceSortKey,
+  absenceSortDirection,
 }: TableContentProps) => {
-  if (loading) {
+  if (absencesLoading) {
     return <TableSkeleton />;
   }
-  if (error) {
+  if (absencesError) {
     return (
       <div
         className="text-destructive text-center"
         data-testid={testIds.errorMessage}
       >
-        {error}
+        {absencesError}
       </div>
     );
   }
@@ -46,9 +49,9 @@ export const TableContent = ({
   return (
     <table className="w-full border-collapse min-w-225 border-spacing-0">
       <TableHeader
-        sortBy={sortBy}
-        sortKey={sortKey}
-        sortDirection={sortDirection}
+        sortAbsencesBy={sortAbsencesBy}
+        absenceSortKey={absenceSortKey}
+        absenceSortDirection={absenceSortDirection}
       />
       <tbody>
         {absences.length === 0 ? (

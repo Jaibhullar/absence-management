@@ -8,7 +8,6 @@ import { Spinner } from "@/components/ui/spinner";
 const testIds = {
   employeeName: "employee-name-button",
   badge: "status-badge",
-  conflictAlert: "conflict-alert",
 };
 
 export type TableRowProps = {
@@ -60,9 +59,7 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
         {!conflictsLoading && conflicts === null && (
           <span className="text-destructive">Unknown</span>
         )}
-        {!conflictsLoading && conflicts && (
-          <ConflictTooltip testId={testIds.conflictAlert} />
-        )}
+        {!conflictsLoading && conflicts && <ConflictTooltip />}
       </td>
     </tr>
   );

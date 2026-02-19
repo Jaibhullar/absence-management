@@ -1,4 +1,3 @@
-import { TableTitle } from "./TableTitle";
 import { TableContent } from "./TableContent";
 import { useAbsencesTable } from "@/hooks/useAbsencesTable";
 import { FilteringByUserBanner } from "./FilteringByUserBanner";
@@ -6,36 +5,41 @@ import { FilteringByUserBanner } from "./FilteringByUserBanner";
 export const AbsencesTable = () => {
   const {
     absences,
-    loading,
-    error,
+    absencesLoading,
+    absencesError,
     filterAbsencesByUser,
-    clearFilter,
+    clearFilterAbsencesByUser,
     filteredUser,
-    sortBy,
-    sortKey,
-    sortDirection,
+    sortAbsencesBy,
+    absenceSortKey,
+    absenceSortDirection,
   } = useAbsencesTable();
 
   return (
-    <section className="flex flex-col max-h-[calc(100vh-200px)] overflow-hidden px-4 py-6 rounded-md space-y-6">
+    <section className="flex flex-col max-h-[calc(100vh-84px)] overflow-hidden py-12 rounded-md space-y-6">
       <div className="shrink-0 space-y-4">
-        <TableTitle />
+        <div className="space-y-2 border-b pb-4">
+          <h2 className="text-xl font-bold">Employee Absences</h2>
+          <p className="text-muted-foreground text-sm">
+            View and manage all employee absence requests
+          </p>
+        </div>
         {filteredUser && (
           <FilteringByUserBanner
             filteredUser={filteredUser}
-            clearFilter={clearFilter}
+            clearFilterAbsencesByUser={clearFilterAbsencesByUser}
           />
         )}
       </div>
       <div className="flex-1 min-h-0 overflow-auto border rounded-md">
         <TableContent
           absences={absences}
-          loading={loading}
-          error={error}
+          absencesLoading={absencesLoading}
+          absencesError={absencesError}
           filterAbsencesByUser={filterAbsencesByUser}
-          sortBy={sortBy}
-          sortKey={sortKey}
-          sortDirection={sortDirection}
+          sortAbsencesBy={sortAbsencesBy}
+          absenceSortKey={absenceSortKey}
+          absenceSortDirection={absenceSortDirection}
         />
       </div>
     </section>
