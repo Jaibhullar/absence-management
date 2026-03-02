@@ -95,7 +95,6 @@ export const TableHeader = ({
         <th className="py-3">
           <span>Status</span>
         </th>
-        <th className="py-3">Conflicts</th>
       </tr>
     </thead>
   );

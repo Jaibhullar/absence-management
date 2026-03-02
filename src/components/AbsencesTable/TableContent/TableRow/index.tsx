@@ -2,8 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { FormattedAbsence } from "@/types";
 import { ConflictTooltip } from "./ConflictTooltip";
-import { useConflict } from "@/hooks/useConflict";
 import { Spinner } from "@/components/ui/spinner";
+import { useQuery } from "@tanstack/react-query";
+import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 
 const testIds = {
   employeeName: "employee-name-button",
@@ -16,7 +17,15 @@ export type TableRowProps = {
 };
 
 export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
-  const { conflicts, loading: conflictsLoading } = useConflict(absence.id);
+  const {
+    data,
+    isLoading: conflictsLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["conflict", absence.id],
+    queryFn: () => getAbsenceConflict(absence.id),
+  });
+  const conflicts = isError ? null : (data?.conflicts ?? null);
   return (
     <tr className="text-center border-t border-b transition-colors hover:bg-secondary text-sm">
       <td className="py-3">
@@ -30,6 +39,13 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
           data-testid={testIds.employeeName}
         >
           {absence.employeeName}
+          {conflictsLoading && (
+            <Spinner className="justify-self-center text-primary" />
+          )}
+          {!conflictsLoading && conflicts === null && (
+            <span className="text-destructive">Unknown</span>
+          )}
+          {!conflictsLoading && conflicts && <ConflictTooltip />}
         </Button>
       </td>
       <td className="py-3">{absence.startDate}</td>
@@ -52,15 +68,6 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
             Pending
           </Badge>
         )}
-      </td>
-      <td className="py-3">
-        {conflictsLoading && (
-          <Spinner className="justify-self-center text-primary" />
-        )}
-        {!conflictsLoading && conflicts === null && (
-          <span className="text-destructive">Unknown</span>
-        )}
-        {!conflictsLoading && conflicts && <ConflictTooltip />}
       </td>
     </tr>
   );

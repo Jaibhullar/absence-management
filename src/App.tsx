@@ -5,14 +5,12 @@ import { TooltipProvider } from "./components/ui/tooltip";
 
 function App() {
   return (
-    <>
-      <TooltipProvider>
-        <Header />
-        <SectionContainer>
-          <AbsencesTable />
-        </SectionContainer>
-      </TooltipProvider>
-    </>
+    <TooltipProvider>
+      <Header />
+      <SectionContainer>
+        <AbsencesTable />
+      </SectionContainer>
+    </TooltipProvider>
   );
 }
 

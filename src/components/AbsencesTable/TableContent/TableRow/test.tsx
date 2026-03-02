@@ -1,14 +1,15 @@
 import type { FormattedAbsence } from "@/types";
 import { TableRow } from ".";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useConflict } from "@/hooks/useConflict";
+import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { ConflictTooltip } from "./ConflictTooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/hooks/useConflict", () => ({
-  useConflict: jest.fn(),
+jest.mock("@/services/getAbsenceConflict", () => ({
+  getAbsenceConflict: jest.fn(),
 }));
 
 const mockFormattedAbsence: FormattedAbsence = {
@@ -25,22 +26,32 @@ const mockFormattedAbsence: FormattedAbsence = {
 const tableRowTestIds = TableRow.testIds;
 const conflictTooltipTestIds = ConflictTooltip.testIds;
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
 export const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = createTestQueryClient();
   return (
-    <TooltipProvider>
-      <table>
-        <tbody>{children}</tbody>
-      </table>
-    </TooltipProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <table>
+          <tbody>{children}</tbody>
+        </table>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
 describe("<TableRow />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .mocked(useConflict)
-      .mockReturnValue({ conflicts: false, loading: false, error: false });
+    jest.mocked(getAbsenceConflict).mockResolvedValue({ conflicts: false });
   });
   it("calls filterAbsenceByUser with correct parameters when employee name is clicked", async () => {
     const user = userEvent.setup();
@@ -96,11 +107,9 @@ describe("<TableRow />", () => {
     expect(badge).toHaveTextContent("Pending");
     expect(badge).toHaveClass("bg-amber-300 text-amber-800");
   });
-  it("displays conflict alert when there are conflicts", () => {
+  it("displays conflict alert when there are conflicts", async () => {
     const filterAbsenceByUserMock = jest.fn();
-    jest
-      .mocked(useConflict)
-      .mockReturnValue({ conflicts: true, loading: false, error: false });
+    jest.mocked(getAbsenceConflict).mockResolvedValue({ conflicts: true });
 
     render(
       <Wrapper>
@@ -111,13 +120,13 @@ describe("<TableRow />", () => {
       </Wrapper>,
     );
 
-    const conflictAlert = screen.getByTestId(
+    const conflictAlert = await screen.findByTestId(
       conflictTooltipTestIds.conflictIcon,
     );
 
     expect(conflictAlert).toBeInTheDocument();
   });
-  it("does not display conflict alert when there are no conflicts", () => {
+  it("does not display conflict alert when there are no conflicts", async () => {
     const filterAbsenceByUserMock = jest.fn();
 
     render(
@@ -128,6 +137,10 @@ describe("<TableRow />", () => {
         />
       </Wrapper>,
     );
+
+    await waitFor(() => {
+      expect(getAbsenceConflict).toHaveBeenCalled();
+    });
 
     const conflictAlert = screen.queryByTestId(
       conflictTooltipTestIds.conflictIcon,
