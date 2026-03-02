@@ -28,6 +28,7 @@ export const FilteringByUserBanner = ({
         size={"icon-sm"}
         className="cursor-pointer"
         onClick={clearFilterAbsencesByUser}
+        aria-label="Clear filter"
         data-testid={testIds.clearFiltersButton}
       >
         <X></X>

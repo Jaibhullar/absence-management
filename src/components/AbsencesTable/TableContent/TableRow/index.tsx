@@ -26,6 +26,7 @@ export const TableRow = ({ absence, filterAbsenceByUser }: TableRowProps) => {
           onClick={() => {
             filterAbsenceByUser(absence.userId, absence.employeeName);
           }}
+          aria-label={`Filter absences by ${absence.employeeName}`}
           data-testid={testIds.employeeName}
         >
           {absence.employeeName}

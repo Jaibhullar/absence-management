@@ -16,10 +16,12 @@ const SortIcon = ({
   absenceSortDirection?: AbsenceSortDirection;
 }) => {
   if (!absenceSortDirection)
-    return <ArrowUpDown className="h-4 w-4"></ArrowUpDown>;
+    return (
+      <ArrowUpDown className="h-4 w-4" aria-label="Not sorted"></ArrowUpDown>
+    );
   if (absenceSortDirection === "asc")
-    return <ArrowUpIcon className="h-4 w-4" />;
-  return <ArrowDownIcon className="h-4 w-4" />;
+    return <ArrowUpIcon className="h-4 w-4" aria-label="Sorted ascending" />;
+  return <ArrowDownIcon className="h-4 w-4" aria-label="Sorted descending" />;
 };
 
 const SortableCell = ({
@@ -32,6 +34,7 @@ const SortableCell = ({
       <button
         className="mx-auto flex items-center gap-2 justify-center cursor-pointer"
         onClick={sortAbsencesBy}
+        aria-label={`Sort by ${text}`}
       >
         <span>{text}</span>
         <SortIcon absenceSortDirection={absenceSortDirection}></SortIcon>

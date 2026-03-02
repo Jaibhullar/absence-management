@@ -14,7 +14,7 @@ export const ConflictTooltip = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="ghost" aria-label="Absence has conflict">
           <AlertTriangleIcon
             className="text-destructive mx-auto size-5"
             data-testid={testIds.conflictIcon}

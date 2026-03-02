@@ -47,7 +47,10 @@ export const TableContent = ({
   }
 
   return (
-    <table className="w-full border-collapse min-w-225 border-spacing-0">
+    <table
+      className="w-full border-collapse min-w-225 border-spacing-0"
+      aria-label="Employee absences"
+    >
       <TableHeader
         sortAbsencesBy={sortAbsencesBy}
         absenceSortKey={absenceSortKey}
