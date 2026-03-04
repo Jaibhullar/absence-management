@@ -38,6 +38,8 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     },
   });
 
+
+
   const {
     filterAbsencesByUser,
     clearFilterAbsencesByUser,
@@ -59,4 +61,5 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     absenceSortKey,
     absenceSortDirection,
   };
+
 };

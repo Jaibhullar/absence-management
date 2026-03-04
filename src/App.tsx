@@ -6,8 +6,8 @@ import { TooltipProvider } from "./components/ui/tooltip";
 function App() {
   return (
     <TooltipProvider>
-      <Header />
       <SectionContainer>
+        <Header />
         <AbsencesTable />
       </SectionContainer>
     </TooltipProvider>

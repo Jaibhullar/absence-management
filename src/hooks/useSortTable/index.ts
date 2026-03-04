@@ -7,7 +7,8 @@ export type AbsenceSortKey =
   | "startDate"
   | "endDate"
   | "type"
-  | "days";
+  | "days"
+  | "approved";
 export type AbsenceSortDirection = "asc" | "desc";
 
 export type useSortTableParams = {
