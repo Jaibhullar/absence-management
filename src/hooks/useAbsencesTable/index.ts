@@ -1,11 +1,10 @@
 import type { FormattedAbsence } from "@/types";
-import {
-  useSortTable,
-} from "../useSortTable";
 import { getAbsences } from "@/services/getAbsences";
 import { formatAbsences } from "@/utils/formatAbsences";
 import { parseDate } from "@/utils/parseDate";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { getFilteredAbsences } from "@/utils/getFilteredAbsences";
 
 export const ABSENCES_QUERY_KEY = ["absences"];
 
@@ -19,6 +18,11 @@ export type useAbsencesTableResponse = {
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
+  const [filteredUser, setFilteredUser] = useState<{
+    name: string;
+    id: string;
+  } | null>(null);
+
   const {
     data: absences = [],
     isError,
@@ -33,17 +37,24 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     },
   });
 
+  const filteredAbsences = useMemo(() => {
+    const result = getFilteredAbsences(absences, filteredUser);
+    return result;
+  }, [absences, filteredUser]);
 
-  const {
-    filterAbsencesByUser,
-    clearFilterAbsencesByUser,
-    filteredUser,
+  const filterAbsencesByUser = (userId: string, name: string) => {
+    setFilteredUser({
+      id: userId,
+      name,
+    });
+  };
 
-    sortedAndFilteredAbsences,
-  } = useSortTable({ absences });
+  const clearFilterAbsencesByUser = () => {
+    setFilteredUser(null);
+  };
 
   return {
-    absences: sortedAndFilteredAbsences,
+    absences: filteredAbsences,
     absencesError: isError ? "There was an error fetching absences..." : null,
     absencesLoading,
     filterAbsencesByUser,

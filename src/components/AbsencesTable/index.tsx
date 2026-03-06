@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AlertTriangleIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 import type { Data, HeaderColumn } from "../Table/types";
 
@@ -69,62 +69,59 @@ export const AbsencesTable = () => {
     filteredUser,
   } = useAbsencesTable();
 
-  const tableData: Data[] = useMemo(() => {
-    console.log(absences);
-    return absences.map((absence) => ({
-      key: absence.id.toString(),
-      cells: [
-        {
-          key: "employeeName",
-          value: absence.employeeName,
-          customCell: (
-            <>
-              <Button
-                variant="link"
-                className="cursor-pointer text-[#0000EE] relative"
-                onClick={() => {
-                  filterAbsencesByUser(absence.userId, absence.employeeName);
-                }}
-                aria-label={`Filter absences by ${absence.employeeName}`}
-              >
-                {absence.employeeName}
-                <AbsenceConflictTooltip absenceId={absence.id} />
-              </Button>
-            </>
-          ),
-        },
-        {
-          key: "startDate",
-          value: absence.startDate,
-          displayedValue: formatDate(absence.startDate),
-        },
-        {
-          key: "endDate",
-          value: absence.endDate,
-          displayedValue: formatDate(absence.endDate),
-        },
-        { key: "days", value: absence.days, displayedValue: absence.days },
-        { key: "type", value: absence.type, displayedValue: absence.type },
-        {
-          key: "approved",
-          value: absence.approved ? "Approved" : "Pending",
-          customCell: absence.approved ? (
-            <Badge className="bg-green-300 text-green-800">Approved</Badge>
-          ) : (
-            <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
-          ),
-        },
-      ],
-    }));
-  }, [absences, filterAbsencesByUser]);
+  const tableData: Data[] = absences.map((absence) => ({
+    key: absence.id.toString(),
+    cells: [
+      {
+        key: "employeeName",
+        value: absence.employeeName,
+        customCell: (
+          <>
+            <Button
+              variant="link"
+              className="cursor-pointer text-[#0000EE] relative"
+              onClick={() => {
+                filterAbsencesByUser(absence.userId, absence.employeeName);
+              }}
+              aria-label={`Filter absences by ${absence.employeeName}`}
+            >
+              {absence.employeeName}
+              <AbsenceConflictTooltip absenceId={absence.id} />
+            </Button>
+          </>
+        ),
+      },
+      {
+        key: "startDate",
+        value: absence.startDate,
+        displayedValue: formatDate(absence.startDate),
+      },
+      {
+        key: "endDate",
+        value: absence.endDate,
+        displayedValue: formatDate(absence.endDate),
+      },
+      { key: "days", value: absence.days, displayedValue: absence.days },
+      { key: "type", value: absence.type, displayedValue: absence.type },
+      {
+        key: "approved",
+        value: absence.approved ? "Approved" : "Pending",
+        customCell: absence.approved ? (
+          <Badge className="bg-green-300 text-green-800">Approved</Badge>
+        ) : (
+          <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
+        ),
+      },
+    ],
+  }));
 
-  const mockTableHeaderColumns: HeaderColumn[] = [
+  const headerColumns: HeaderColumn[] = [
     { key: "employeeName", text: "Employee", sortable: true, filterable: true },
     { key: "startDate", text: "Start Date", sortable: true, filterable: true },
     { key: "endDate", text: "End Date", sortable: true, filterable: true },
     { key: "days", text: "Days", sortable: true, filterable: true },
     { key: "type", text: "Type", sortable: true, filterable: true },
-    { key: "approved", text: "Status", sortable: true, filterable: true },
+    { key: "approved", text: "Status" },
   ];
 
   return (
@@ -165,15 +162,17 @@ export const AbsencesTable = () => {
       <div className="flex-1 min-h-0 overflow-auto">
         <Table
           data={tableData}
-          headerColumns={mockTableHeaderColumns}
+          headerColumns={headerColumns}
           loading={absencesLoading}
           error={!!absencesError}
           errorMessage={absencesError ?? undefined}
           ariaLabel="Employee absences"
-          frontendPagination
-          paginationFormat={paginationFormat}
-          recordsPerPage={4}
-        ></Table>
+          pagination={{
+            mode: "frontend",
+            format: paginationFormat,
+            recordsPerPage: 4,
+          }}
+        />
       </div>
     </section>
   );

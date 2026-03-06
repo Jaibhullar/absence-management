@@ -1,353 +1,587 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import { Table, type HeaderColumn, type Data } from ".";
+import { Table } from ".";
+import type { Data, HeaderColumn } from "./types";
+import { TableFilters } from "./TableFilters";
+import { Pagination } from "./pagination";
+import { SortIcon } from "./SortIcon";
 
-const tableTestIds = Table.testIds;
+const testIds = Table.testIds;
+const tableFilterTestIds = TableFilters.testIds;
+const paginationTestIds = Pagination.testIds;
+const sortIconsTestIds = SortIcon.testIds;
 
 const mockHeaderColumns: HeaderColumn[] = [
-  { key: "name", text: "Name" },
-  { key: "date", text: "Date" },
-  { key: "status", text: "Status" },
+  { key: "name", text: "Name", sortable: true },
+  { key: "age", text: "Age", sortable: true },
+  { key: "city", text: "City" },
+];
+
+const mockFilterableHeaderColumns: HeaderColumn[] = [
+  { key: "name", text: "Name", sortable: true, filterable: true },
+  { key: "age", text: "Age", sortable: true },
+  { key: "city", text: "City", filterable: true },
 ];
 
 const mockData: Data[] = [
   {
     key: "1",
     cells: [
-      { value: "John Doe" },
-      { value: "2024-01-01" },
-      { value: "Active" },
+      { key: "name", value: "Alice", displayedValue: "Alice" },
+      { key: "age", value: 30, displayedValue: 30 },
+      { key: "city", value: "New York", displayedValue: "New York" },
     ],
   },
   {
     key: "2",
     cells: [
-      { value: "Jane Smith" },
-      { value: "2024-01-02" },
-      { value: "Pending" },
+      { key: "name", value: "Bob", displayedValue: "Bob" },
+      { key: "age", value: 25, displayedValue: 25 },
+      { key: "city", value: "Los Angeles", displayedValue: "Los Angeles" },
     ],
   },
   {
     key: "3",
     cells: [
-      { value: "Bob Wilson" },
-      { value: "2024-01-03" },
-      { value: "Active" },
+      { key: "name", value: "Charlie", displayedValue: "Charlie" },
+      { key: "age", value: 35, displayedValue: 35 },
+      { key: "city", value: "Chicago", displayedValue: "Chicago" },
     ],
   },
 ];
 
-const mockLargeData: Data[] = Array.from({ length: 25 }, (_, i) => ({
-  key: `${i + 1}`,
-  cells: [
-    { value: `User ${i + 1}` },
-    { value: `2024-01-${String(i + 1).padStart(2, "0")}` },
-    { value: "Active" },
-  ],
-}));
+describe("Table", () => {
+  describe("loading state", () => {
+    it("renders skeleton when loading", () => {
+      render(
+        <Table headerColumns={mockHeaderColumns} data={[]} loading={true} />,
+      );
 
-describe("<Table />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+      expect(screen.getByTestId("table-skeleton")).toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.dataTable)).not.toBeInTheDocument();
+    });
   });
 
-  describe("rendering", () => {
+  describe("error state", () => {
+    it("renders default error message when error is true", () => {
+      render(
+        <Table headerColumns={mockHeaderColumns} data={[]} error={true} />,
+      );
+
+      const errorElement = screen.getByTestId(testIds.errorMessage);
+      expect(errorElement).toBeInTheDocument();
+      expect(errorElement).toHaveTextContent(
+        "There was an error fetching data...",
+      );
+    });
+
+    it("renders custom error message when provided", () => {
+      render(
+        <Table
+          headerColumns={mockHeaderColumns}
+          data={[]}
+          error={true}
+          errorMessage="Custom error occurred"
+        />,
+      );
+
+      const errorElement = screen.getByTestId(testIds.errorMessage);
+      expect(errorElement).toHaveTextContent("Custom error occurred");
+    });
+
+    it("has accessible error aria-label", () => {
+      render(
+        <Table headerColumns={mockHeaderColumns} data={[]} error={true} />,
+      );
+
+      const errorElement = screen.getByTestId(testIds.errorMessage);
+      expect(errorElement).toHaveAttribute("aria-label", "Error fetching data");
+    });
+  });
+
+  describe("empty state", () => {
+    it("renders no results message when data is empty", () => {
+      render(<Table headerColumns={mockHeaderColumns} data={[]} />);
+
+      expect(screen.getByTestId(testIds.noResultsMessage)).toBeInTheDocument();
+      expect(screen.getByText("No results to show")).toBeInTheDocument();
+    });
+  });
+
+  describe("data rendering", () => {
+    it("renders table with data", () => {
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
+      expect(screen.getByTestId(testIds.dataTable)).toBeInTheDocument();
+      expect(screen.getByText("Alice")).toBeInTheDocument();
+      expect(screen.getByText("Bob")).toBeInTheDocument();
+      expect(screen.getByText("Charlie")).toBeInTheDocument();
+    });
+
     it("renders header columns correctly", () => {
       render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
 
       expect(screen.getByText("Name")).toBeInTheDocument();
-      expect(screen.getByText("Date")).toBeInTheDocument();
-      expect(screen.getByText("Status")).toBeInTheDocument();
+      expect(screen.getByText("Age")).toBeInTheDocument();
+      expect(screen.getByText("City")).toBeInTheDocument();
     });
 
-    it("renders data rows correctly", () => {
-      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
-
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-      expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
-    });
-
-    it("renders custom header cells when provided", () => {
-      const customHeaderColumns: HeaderColumn[] = [
-        {
-          key: "name",
-          text: "Name",
-          customCell: <button>Custom Header</button>,
-        },
-      ];
-
-      render(<Table headerColumns={customHeaderColumns} data={[]} />);
-
-      expect(screen.getByText("Custom Header")).toBeInTheDocument();
-    });
-
-    it("renders custom data cells when provided", () => {
-      const customData: Data[] = [
+    it("renders custom cells when provided", () => {
+      const dataWithCustomCell: Data[] = [
         {
           key: "1",
           cells: [
             {
-              value: "raw-value",
-              customCell: <span data-testid="custom-cell">Custom Cell</span>,
+              key: "name",
+              value: "Alice",
+              customCell: <span data-testid="custom-cell">Custom Alice</span>,
             },
+            { key: "age", value: 30, displayedValue: 30 },
+            { key: "city", value: "New York", displayedValue: "New York" },
           ],
         },
       ];
 
       render(
-        <Table
-          headerColumns={[{ key: "col", text: "Column" }]}
-          data={customData}
-        />,
+        <Table headerColumns={mockHeaderColumns} data={dataWithCustomCell} />,
       );
 
       expect(screen.getByTestId("custom-cell")).toBeInTheDocument();
-      expect(screen.queryByText("raw-value")).not.toBeInTheDocument();
+      expect(screen.getByText("Custom Alice")).toBeInTheDocument();
     });
 
-    it("renders aria-label when provided", () => {
+    it("renders custom header cells when provided", () => {
+      const columnsWithCustomCell: HeaderColumn[] = [
+        {
+          key: "name",
+          customCell: (
+            <span data-testid="custom-header">Custom Name Header</span>
+          ),
+        },
+        { key: "age", text: "Age" },
+      ];
+
+      render(<Table headerColumns={columnsWithCustomCell} data={mockData} />);
+
+      expect(screen.getByTestId("custom-header")).toBeInTheDocument();
+    });
+
+    it("applies aria-label when provided", () => {
       render(
         <Table
           headerColumns={mockHeaderColumns}
           data={mockData}
-          ariaLabel="Test table"
+          ariaLabel="User data table"
         />,
       );
 
-      expect(screen.getByRole("table")).toHaveAttribute(
-        "aria-label",
-        "Test table",
-      );
+      expect(screen.getByLabelText("User data table")).toBeInTheDocument();
     });
   });
 
-  describe("loading state", () => {
-    it("displays skeleton when loading is true", () => {
-      render(
-        <Table headerColumns={mockHeaderColumns} data={mockData} loading />,
-      );
+  describe("sorting", () => {
+    it("renders sort icons for sortable columns", () => {
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
 
+      // Name and Age are sortable
+      const sortIcons = screen.getAllByTestId(sortIconsTestIds.unsortedIcon);
+      expect(sortIcons).toHaveLength(2);
+    });
+
+    it("sorts data when clicking sortable column header", async () => {
+      const user = userEvent.setup();
+
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
+      const nameHeader = screen.getByText("Name").closest("th");
+      await user.click(nameHeader!);
+
+      // After ascending sort, Alice should be first
+      const rows = screen.getAllByTestId(testIds.dataRow);
+      const firstDataRow = rows[0];
+      expect(within(firstDataRow).getByText("Alice")).toBeInTheDocument();
+    });
+
+    it("toggles sort direction on subsequent clicks", async () => {
+      const user = userEvent.setup();
+
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
+      const nameHeader = screen.getByText("Name").closest("th");
+
+      // First click - ascending
+      await user.click(nameHeader!);
       expect(
-        screen.getByTestId(tableTestIds.tableSkeleton),
+        screen.getByTestId(sortIconsTestIds.ascendingIcon),
       ).toBeInTheDocument();
-      expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
+
+      // Second click - descending
+      await user.click(nameHeader!);
+      expect(
+        screen.getByTestId(sortIconsTestIds.descendingIcon),
+      ).toBeInTheDocument();
     });
 
-    it("displays skeleton with correct number of columns", () => {
-      render(
-        <Table headerColumns={mockHeaderColumns} data={mockData} loading />,
-      );
+    it("updates aria-sort attribute on sorted column", async () => {
+      const user = userEvent.setup();
 
-      const skeleton = screen.getByTestId(tableTestIds.tableSkeleton);
-      const headerCells = within(skeleton).getAllByTestId(
-        tableTestIds.tableSkeletonCol,
-      );
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
 
-      expect(headerCells).toHaveLength(mockHeaderColumns.length);
-    });
-  });
+      const nameHeader = screen.getAllByTestId(testIds.headerCell)[0];
+      expect(nameHeader).toHaveAttribute("aria-sort", "none");
 
-  describe("error state", () => {
-    it("displays default error message when error is true", () => {
-      render(<Table headerColumns={mockHeaderColumns} data={mockData} error />);
+      await user.click(nameHeader!);
+      expect(nameHeader).toHaveAttribute("aria-sort", "ascending");
 
-      expect(screen.getByTestId(tableTestIds.errorMessage)).toHaveTextContent(
-        "There was an error fetching data...",
-      );
+      await user.click(nameHeader!);
+      expect(nameHeader).toHaveAttribute("aria-sort", "descending");
     });
 
-    it("displays custom error message when provided", () => {
+    it("calls onSort callback when provided", async () => {
+      const user = userEvent.setup();
+      const onSort = jest.fn();
+
       render(
         <Table
           headerColumns={mockHeaderColumns}
           data={mockData}
-          error
-          errorMessage="Custom error occurred"
+          onSort={onSort}
         />,
       );
 
-      expect(screen.getByTestId(tableTestIds.errorMessage)).toHaveTextContent(
-        "Custom error occurred",
+      const nameHeader = screen.getAllByTestId(testIds.headerCell)[0];
+      await user.click(nameHeader!);
+
+      expect(onSort).toHaveBeenCalledWith(
+        expect.objectContaining({ key: "name" }),
       );
     });
 
-    it("does not render table when error is true", () => {
-      render(<Table headerColumns={mockHeaderColumns} data={mockData} error />);
+    it("does not sort when clicking non-sortable column", async () => {
+      const user = userEvent.setup();
 
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
+      const cityHeader = screen.getAllByTestId(testIds.headerCell)[2];
+      await user.click(cityHeader!);
+
+      // Should not have any sorted icons
       expect(
-        screen.queryByTestId(tableTestIds.dataTable),
+        screen.queryByTestId(sortIconsTestIds.ascendingIcon),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId(sortIconsTestIds.descendingIcon),
       ).not.toBeInTheDocument();
     });
   });
 
-  describe("empty state", () => {
-    it("displays no results message when data is empty", () => {
-      render(<Table headerColumns={mockHeaderColumns} data={[]} />);
+  describe("filtering", () => {
+    it("renders filter inputs for filterable columns", () => {
+      render(
+        <Table headerColumns={mockFilterableHeaderColumns} data={mockData} />,
+      );
 
       expect(
-        screen.getByTestId(tableTestIds.noResultsMessage),
-      ).toBeInTheDocument();
+        screen.getAllByTestId(tableFilterTestIds.filterInputContainer),
+      ).toHaveLength(2);
+      expect(screen.getByLabelText("Filter by Name")).toBeInTheDocument();
+      expect(screen.getByLabelText("Filter by City")).toBeInTheDocument();
+    });
+
+    it("does not render filters when no filterable columns", () => {
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
       expect(
-        screen.getByTestId(tableTestIds.noResultsMessage),
-      ).toHaveTextContent("No results to show");
+        screen.queryAllByTestId(tableFilterTestIds.filterInputContainer),
+      ).toHaveLength(0);
+    });
+
+    it("filters data when typing in filter input", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Table headerColumns={mockFilterableHeaderColumns} data={mockData} />,
+      );
+
+      const nameFilter = screen
+        .getAllByTestId(tableFilterTestIds.filterInputContainer)[0]
+        .querySelector("input")!;
+      await user.type(nameFilter, "Alice");
+
+      expect(screen.getByText("Alice")).toBeInTheDocument();
+      expect(screen.queryByText("Bob")).not.toBeInTheDocument();
+      expect(screen.queryByText("Charlie")).not.toBeInTheDocument();
+    });
+
+    it("clears filters when Clear Filters button is clicked", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Table headerColumns={mockFilterableHeaderColumns} data={mockData} />,
+      );
+
+      const nameFilter = screen
+        .getAllByTestId(tableFilterTestIds.filterInputContainer)[0]
+        .querySelector("input")!;
+      await user.type(nameFilter, "Alice");
+
+      expect(screen.queryByText("Bob")).not.toBeInTheDocument();
+
+      const clearButton = screen.getByTestId(
+        tableFilterTestIds.clearFiltersButton,
+      );
+      await user.click(clearButton);
+
+      expect(screen.getByText("Alice")).toBeInTheDocument();
+      expect(screen.getByText("Bob")).toBeInTheDocument();
+      expect(screen.getByText("Charlie")).toBeInTheDocument();
     });
   });
 
   describe("frontend pagination", () => {
-    it("shows only recordsPerPage items initially", () => {
+    const extendedData: Data[] = [
+      ...mockData,
+      {
+        key: "4",
+        cells: [
+          { key: "name", value: "Diana", displayedValue: "Diana" },
+          { key: "age", value: 28, displayedValue: 28 },
+          { key: "city", value: "Houston", displayedValue: "Houston" },
+        ],
+      },
+      {
+        key: "5",
+        cells: [
+          { key: "name", value: "Eve", displayedValue: "Eve" },
+          { key: "age", value: 32, displayedValue: 32 },
+          { key: "city", value: "Phoenix", displayedValue: "Phoenix" },
+        ],
+      },
+    ];
+
+    it("renders pagination controls with show-more format", () => {
       render(
         <Table
           headerColumns={mockHeaderColumns}
-          data={mockLargeData}
-          frontendPagination
-          recordsPerPage={10}
-        />,
-      );
-
-      expect(screen.getByText("User 1")).toBeInTheDocument();
-      expect(screen.getByText("User 10")).toBeInTheDocument();
-      expect(screen.queryByText("User 11")).not.toBeInTheDocument();
-    });
-
-    it("renders Show More button when frontendPagination is enabled", () => {
-      render(
-        <Table
-          headerColumns={mockHeaderColumns}
-          data={mockLargeData}
-          frontendPagination
-          recordsPerPage={10}
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "show-more",
+            recordsPerPage: 2,
+          }}
         />,
       );
 
       expect(
-        screen.getByRole("button", { name: "Show More" }),
+        screen.getByTestId(paginationTestIds.showMoreButton),
       ).toBeInTheDocument();
     });
 
-    it("loads more items when Show More is clicked", async () => {
+    it("shows more records when Show More is clicked", async () => {
       const user = userEvent.setup();
 
       render(
         <Table
           headerColumns={mockHeaderColumns}
-          data={mockLargeData}
-          frontendPagination
-          recordsPerPage={10}
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "show-more",
+            recordsPerPage: 2,
+          }}
         />,
       );
 
-      expect(screen.queryByText("User 11")).not.toBeInTheDocument();
+      // Initially only 2 records
+      expect(screen.getByText("Alice")).toBeInTheDocument();
+      expect(screen.getByText("Bob")).toBeInTheDocument();
+      expect(screen.queryByText("Charlie")).not.toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "Show More" }));
+      await user.click(screen.getByTestId(paginationTestIds.showMoreButton));
 
-      expect(screen.getByText("User 11")).toBeInTheDocument();
-      expect(screen.getByText("User 20")).toBeInTheDocument();
-      expect(screen.queryByText("User 21")).not.toBeInTheDocument();
+      // Now 4 records
+      expect(screen.getByText("Charlie")).toBeInTheDocument();
+      expect(screen.getByText("Diana")).toBeInTheDocument();
     });
 
-    it("disables Show More button when all items are displayed", async () => {
+    it("renders pagination controls with next-prev format", () => {
+      render(
+        <Table
+          headerColumns={mockHeaderColumns}
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "next-prev",
+            recordsPerPage: 2,
+          }}
+        />,
+      );
+
+      expect(
+        screen.getByTestId(paginationTestIds.prevButton),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId(paginationTestIds.nextButton),
+      ).toBeInTheDocument();
+    });
+
+    it("navigates pages with next-prev format", async () => {
       const user = userEvent.setup();
 
       render(
         <Table
           headerColumns={mockHeaderColumns}
-          data={mockLargeData}
-          frontendPagination
-          recordsPerPage={10}
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "next-prev",
+            recordsPerPage: 2,
+          }}
         />,
       );
 
-      // Click until all items are loaded
-      await user.click(screen.getByRole("button", { name: "Show More" }));
-      await user.click(screen.getByRole("button", { name: "Show More" }));
+      expect(screen.getByText("Alice")).toBeInTheDocument();
+      expect(screen.queryByText("Charlie")).not.toBeInTheDocument();
 
-      expect(screen.getByText("User 25")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Show More" })).toBeDisabled();
+      await user.click(screen.getByTestId(paginationTestIds.nextButton));
+
+      expect(screen.queryByText("Alice")).not.toBeInTheDocument();
+      expect(screen.getByText("Charlie")).toBeInTheDocument();
     });
 
-    it("uses default recordsPerPage of 10 when not specified", () => {
+    it("renders pagination controls with page-numbers format", () => {
       render(
         <Table
           headerColumns={mockHeaderColumns}
-          data={mockLargeData}
-          frontendPagination
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "page-numbers",
+            recordsPerPage: 2,
+          }}
         />,
       );
 
-      expect(screen.getByText("User 1")).toBeInTheDocument();
-      expect(screen.getByText("User 10")).toBeInTheDocument();
-      expect(screen.queryByText("User 11")).not.toBeInTheDocument();
+      expect(
+        screen.getAllByTestId(paginationTestIds.pageNumberButton)[0],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByTestId(paginationTestIds.pageNumberButton)[1],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByTestId(paginationTestIds.pageNumberButton)[2],
+      ).toBeInTheDocument();
+    });
+
+    it("navigates to specific page with page-numbers format", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Table
+          headerColumns={mockHeaderColumns}
+          data={extendedData}
+          pagination={{
+            mode: "frontend",
+            format: "page-numbers",
+            recordsPerPage: 2,
+          }}
+        />,
+      );
+
+      await user.click(
+        screen.getAllByTestId(paginationTestIds.pageNumberButton)[2],
+      );
+
+      expect(screen.queryByText("Alice")).not.toBeInTheDocument();
+      expect(screen.getByText("Eve")).toBeInTheDocument();
+    });
+
+    it("does not render pagination when pagination prop is not provided", () => {
+      render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
+
+      expect(
+        screen.queryByTestId(paginationTestIds.paginationContainer),
+      ).not.toBeInTheDocument();
     });
   });
 
   describe("backend pagination", () => {
-    it("renders Show More button when backendPagination is enabled", () => {
-      render(
-        <Table
-          headerColumns={mockHeaderColumns}
-          data={mockData}
-          backendPagination
-          displayShowMoreButton
-        />,
-      );
-
-      expect(
-        screen.getByRole("button", { name: "Show More" }),
-      ).toBeInTheDocument();
-    });
-
-    it("calls onShowMore when Show More is clicked with backend pagination", async () => {
+    it("calls onShowMore when Show More is clicked", async () => {
       const user = userEvent.setup();
-      const onShowMoreMock = jest.fn();
+      const onShowMore = jest.fn();
 
       render(
         <Table
           headerColumns={mockHeaderColumns}
           data={mockData}
-          backendPagination
-          onShowMore={onShowMoreMock}
-          displayShowMoreButton
+          pagination={{
+            mode: "backend",
+            format: "show-more",
+            numberOfPages: 3,
+            onShowMore,
+            enableShowMoreButton: true,
+          }}
         />,
       );
 
-      await user.click(screen.getByRole("button", { name: "Show More" }));
-
-      expect(onShowMoreMock).toHaveBeenCalledTimes(1);
+      await user.click(screen.getByTestId(paginationTestIds.showMoreButton));
+      expect(onShowMore).toHaveBeenCalledTimes(1);
     });
 
-    it("disables Show More button when displayShowMoreButton is false", () => {
+    it("calls onNextPage when Next is clicked", async () => {
+      const user = userEvent.setup();
+      const onNextPage = jest.fn();
+      const onPrevPage = jest.fn();
+
       render(
         <Table
           headerColumns={mockHeaderColumns}
           data={mockData}
-          backendPagination
-          displayShowMoreButton={false}
+          pagination={{
+            mode: "backend",
+            format: "next-prev",
+            numberOfPages: 3,
+            onNextPage,
+            onPrevPage,
+            enableNextButton: true,
+            enablePrevButton: true,
+          }}
         />,
       );
 
-      expect(screen.getByRole("button", { name: "Show More" })).toBeDisabled();
+      await user.click(screen.getByTestId(paginationTestIds.nextButton));
+      expect(onNextPage).toHaveBeenCalledTimes(1);
     });
-  });
 
-  describe("no pagination", () => {
-    it("does not render Show More button when pagination is not enabled", () => {
+    it("calls onPageChange when page number is clicked", async () => {
+      const user = userEvent.setup();
+      const onPageChange = jest.fn();
+
+      render(
+        <Table
+          headerColumns={mockHeaderColumns}
+          data={mockData}
+          pagination={{
+            mode: "backend",
+            format: "page-numbers",
+            numberOfPages: 3,
+            onPageChange,
+          }}
+        />,
+      );
+
+      await user.click(
+        screen.getAllByTestId(paginationTestIds.pageNumberButton)[1],
+      );
+      expect(onPageChange).toHaveBeenCalledWith(2);
+    });
+    it("does not render pagination when pagination prop is not provided", () => {
       render(<Table headerColumns={mockHeaderColumns} data={mockData} />);
 
       expect(
-        screen.queryByRole("button", { name: "Show More" }),
+        screen.queryByTestId(paginationTestIds.paginationContainer),
       ).not.toBeInTheDocument();
-    });
-
-    it("renders all data when pagination is not enabled", () => {
-      render(<Table headerColumns={mockHeaderColumns} data={mockLargeData} />);
-
-      mockLargeData.forEach((item) => {
-        expect(
-          screen.getByText(item.cells[0].value as string),
-        ).toBeInTheDocument();
-      });
     });
   });
 });

@@ -1,8 +1,15 @@
 import { Button } from "@/components/ui/button";
 
+const testIds = {
+  paginationContainer: "pagination-container",
+  showMoreButton: "show-more-button",
+  prevButton: "prev-button",
+  nextButton: "next-button",
+  pageNumberButton: "page-number-button",
+};
+
 export type PaginationProps = {
   paginationFormat: "show-more" | "next-prev" | "page-numbers";
-  headerColumnsLength: number;
   numberOfPages: number;
   currentPage: number;
   disableShowMoreButton: boolean;
@@ -16,7 +23,6 @@ export type PaginationProps = {
 
 export const Pagination = ({
   paginationFormat,
-  headerColumnsLength,
   numberOfPages,
   currentPage,
   disableShowMoreButton,
@@ -28,44 +34,55 @@ export const Pagination = ({
   handlePageChange,
 }: PaginationProps) => {
   return (
-    <tfoot>
-      <tr>
-        <td
-          className="py-3 px-2 text-center space-x-4"
-          colSpan={headerColumnsLength}
+    <div
+      className="py-3 px-2 text-center space-x-4 space-y-4"
+      data-testid={testIds.paginationContainer}
+    >
+      {paginationFormat === "show-more" && (
+        <Button
+          onClick={handleShowMore}
+          disabled={disableShowMoreButton}
+          data-testid={testIds.showMoreButton}
         >
-          {paginationFormat === "show-more" && (
-            <Button onClick={handleShowMore} disabled={disableShowMoreButton}>
-              Show More
-            </Button>
-          )}
-          {paginationFormat === "next-prev" && (
-            <>
-              <Button onClick={handlePrevPage} disabled={disablePrevButton}>
-                Prev
+          Show More
+        </Button>
+      )}
+      {paginationFormat === "next-prev" && (
+        <>
+          <Button
+            onClick={handlePrevPage}
+            disabled={disablePrevButton}
+            data-testid={testIds.prevButton}
+          >
+            Prev
+          </Button>
+          <Button
+            onClick={handleNextPage}
+            disabled={disableNextButton}
+            data-testid={testIds.nextButton}
+          >
+            Next
+          </Button>
+        </>
+      )}
+      {paginationFormat === "page-numbers" && (
+        <>
+          {Array.from({ length: numberOfPages ?? 0 }, (_, i) => i + 1).map(
+            (page) => (
+              <Button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                disabled={page === currentPage}
+                data-testid={testIds.pageNumberButton}
+              >
+                {page}
               </Button>
-              <Button onClick={handleNextPage} disabled={disableNextButton}>
-                Next
-              </Button>
-            </>
+            ),
           )}
-          {paginationFormat === "page-numbers" && (
-            <>
-              {Array.from({ length: numberOfPages ?? 0 }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    disabled={page === currentPage}
-                  >
-                    {page}
-                  </Button>
-                ),
-              )}
-            </>
-          )}
-        </td>
-      </tr>
-    </tfoot>
+        </>
+      )}
+    </div>
   );
 };
+
+Pagination.testIds = testIds;
