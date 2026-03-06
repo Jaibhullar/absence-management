@@ -1,10 +1,8 @@
 import { useAbsencesTable } from "@/hooks/useAbsencesTable";
 import { FilteringByUserBanner } from "./FilteringByUserBanner";
-import { Table, type Data, type HeaderColumn } from "../Table";
+import { Table } from "../Table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
-import type { AbsenceSortDirection } from "@/hooks/useSortTable";
-import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
 import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "../ui/spinner";
@@ -14,43 +12,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AlertTriangleIcon } from "lucide-react";
-
-type SortableCellProps = {
-  sortAbsencesBy: () => void;
-  text: string;
-  absenceSortDirection?: AbsenceSortDirection;
-};
-
-const SortableCell = ({
-  sortAbsencesBy,
-  text,
-  absenceSortDirection,
-}: SortableCellProps) => {
-  return (
-    <button
-      className="mx-auto flex items-center gap-2 justify-center cursor-pointer"
-      onClick={sortAbsencesBy}
-      aria-label={`Sort by ${text}`}
-    >
-      <span>{text}</span>
-      <SortIcon absenceSortDirection={absenceSortDirection}></SortIcon>
-    </button>
-  );
-};
-
-const SortIcon = ({
-  absenceSortDirection,
-}: {
-  absenceSortDirection?: AbsenceSortDirection;
-}) => {
-  if (!absenceSortDirection)
-    return (
-      <ArrowUpDown className="h-4 w-4" aria-label="Not sorted"></ArrowUpDown>
-    );
-  if (absenceSortDirection === "asc")
-    return <ArrowUpIcon className="h-4 w-4" aria-label="Sorted ascending" />;
-  return <ArrowDownIcon className="h-4 w-4" aria-label="Sorted descending" />;
-};
+import { useMemo, useState } from "react";
+import { formatDate } from "@/utils/formatDate";
+import type { Data, HeaderColumn } from "../Table/types";
 
 type AbsenceConflictTooltipProps = {
   absenceId: number;
@@ -92,6 +56,10 @@ const AbsenceConflictTooltip = ({ absenceId }: AbsenceConflictTooltipProps) => {
 };
 
 export const AbsencesTable = () => {
+  const [paginationFormat, setPaginationFormat] = useState<
+    "show-more" | "next-prev" | "page-numbers"
+  >("show-more");
+
   const {
     absences,
     absencesLoading,
@@ -99,123 +67,94 @@ export const AbsencesTable = () => {
     filterAbsencesByUser,
     clearFilterAbsencesByUser,
     filteredUser,
-    sortAbsencesBy,
-    absenceSortKey,
-    absenceSortDirection,
   } = useAbsencesTable();
 
-  const tableData: Data[] = absences.map((absence) => ({
-    key: absence.id.toString(),
-    cells: [
-      {
-        customCell: (
-          <>
-            <Button
-              variant="link"
-              className="cursor-pointer text-[#0000EE] relative"
-              onClick={() => {
-                filterAbsencesByUser(absence.userId, absence.employeeName);
-              }}
-              aria-label={`Filter absences by ${absence.employeeName}`}
-            >
-              {absence.employeeName}
-              <AbsenceConflictTooltip absenceId={absence.id} />
-            </Button>
-          </>
-        ),
-      },
-      { value: absence.startDate },
-      { value: absence.endDate },
-      { value: absence.days },
-      { value: absence.type },
-      {
-        customCell: absence.approved ? (
-          <Badge className="bg-green-300 text-green-800">Approved</Badge>
-        ) : (
-          <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
-        ),
-      },
-    ],
-  }));
+  const tableData: Data[] = useMemo(() => {
+    console.log(absences);
+    return absences.map((absence) => ({
+      key: absence.id.toString(),
+      cells: [
+        {
+          key: "employeeName",
+          value: absence.employeeName,
+          customCell: (
+            <>
+              <Button
+                variant="link"
+                className="cursor-pointer text-[#0000EE] relative"
+                onClick={() => {
+                  filterAbsencesByUser(absence.userId, absence.employeeName);
+                }}
+                aria-label={`Filter absences by ${absence.employeeName}`}
+              >
+                {absence.employeeName}
+                <AbsenceConflictTooltip absenceId={absence.id} />
+              </Button>
+            </>
+          ),
+        },
+        {
+          key: "startDate",
+          value: absence.startDate,
+          displayedValue: formatDate(absence.startDate),
+        },
+        {
+          key: "endDate",
+          value: absence.endDate,
+          displayedValue: formatDate(absence.endDate),
+        },
+        { key: "days", value: absence.days, displayedValue: absence.days },
+        { key: "type", value: absence.type, displayedValue: absence.type },
+        {
+          key: "approved",
+          value: absence.approved ? "Approved" : "Pending",
+          customCell: absence.approved ? (
+            <Badge className="bg-green-300 text-green-800">Approved</Badge>
+          ) : (
+            <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
+          ),
+        },
+      ],
+    }));
+  }, [absences, filterAbsencesByUser]);
 
-  const tableHeaderColumns: HeaderColumn[] = [
-    {
-      key: "employeeName",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("employeeName")}
-          text="Employee"
-          absenceSortDirection={
-            absenceSortKey === "employeeName" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
-    {
-      key: "startDate",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("startDate")}
-          text="Start Date"
-          absenceSortDirection={
-            absenceSortKey === "startDate" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
-    {
-      key: "endDate",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("endDate")}
-          text="End Date"
-          absenceSortDirection={
-            absenceSortKey === "endDate" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
-    {
-      key: "days",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("days")}
-          text="Days"
-          absenceSortDirection={
-            absenceSortKey === "days" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
-    {
-      key: "type",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("type")}
-          text="Type"
-          absenceSortDirection={
-            absenceSortKey === "type" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
-    {
-      key: "approved",
-      customCell: (
-        <SortableCell
-          sortAbsencesBy={() => sortAbsencesBy("approved")}
-          text="Status"
-          absenceSortDirection={
-            absenceSortKey === "approved" ? absenceSortDirection : undefined
-          }
-        />
-      ),
-    },
+  const mockTableHeaderColumns: HeaderColumn[] = [
+    { key: "employeeName", text: "Employee", sortable: true, filterable: true },
+    { key: "startDate", text: "Start Date", sortable: true, filterable: true },
+    { key: "endDate", text: "End Date", sortable: true, filterable: true },
+    { key: "days", text: "Days", sortable: true, filterable: true },
+    { key: "type", text: "Type", sortable: true, filterable: true },
+    { key: "approved", text: "Status", sortable: true, filterable: true },
   ];
 
   return (
     <section className="flex flex-col max-h-[calc(100vh-116px)] overflow-hidden pt-4 pb-12 rounded-md space-y-6">
-      <div className="shrink-0">
+      <div className="shrink-0 space-y-3">
+        <div className="space-x-3">
+          <Button
+            variant={paginationFormat === "show-more" ? "default" : "outline"}
+            size={"sm"}
+            onClick={() => setPaginationFormat("show-more")}
+          >
+            Show more btn
+          </Button>
+          <Button
+            variant={paginationFormat === "next-prev" ? "default" : "outline"}
+            size={"sm"}
+            onClick={() => setPaginationFormat("next-prev")}
+          >
+            Prev-Next btns
+          </Button>
+          <Button
+            variant={
+              paginationFormat === "page-numbers" ? "default" : "outline"
+            }
+            size={"sm"}
+            onClick={() => setPaginationFormat("page-numbers")}
+          >
+            Page Number btns
+          </Button>
+        </div>
         {filteredUser && (
           <FilteringByUserBanner
             filteredUser={filteredUser}
@@ -223,15 +162,17 @@ export const AbsencesTable = () => {
           />
         )}
       </div>
-      <div className="flex-1 min-h-0 overflow-auto border rounded-md">
+      <div className="flex-1 min-h-0 overflow-auto">
         <Table
           data={tableData}
-          headerColumns={tableHeaderColumns}
+          headerColumns={mockTableHeaderColumns}
           loading={absencesLoading}
           error={!!absencesError}
           errorMessage={absencesError ?? undefined}
           ariaLabel="Employee absences"
           frontendPagination
+          paginationFormat={paginationFormat}
+          recordsPerPage={4}
         ></Table>
       </div>
     </section>

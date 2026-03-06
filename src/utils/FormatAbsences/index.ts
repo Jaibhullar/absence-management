@@ -4,7 +4,7 @@ import type {
   FormattedAbsence,
   FormattedAbsenceType,
 } from "@/types";
-import { format, parseISO, addDays } from "date-fns";
+import { parseISO, addDays } from "date-fns";
 
 const ABSENCE_TYPE_LABELS: Record<AbsenceType, FormattedAbsenceType> = {
   ANNUAL_LEAVE: "Annual Leave",
@@ -22,15 +22,11 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
       id: absence.id,
       userId: absence.employee.id,
       employeeName: `${absence.employee.firstName} ${absence.employee.lastName}`,
-      startDate: formatDate(absence.startDate),
-      endDate: formatDate(endDate.toISOString()),
+      startDate: absence.startDate,
+      endDate: endDate.toISOString(),
       days: absence.days,
       type: formattedType,
       approved: absence.approved,
     };
   });
-};
-
-const formatDate = (dateString: string): string => {
-  return format(parseISO(dateString), "MMM d, yyyy");
 };

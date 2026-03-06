@@ -1,8 +1,6 @@
 import type { FormattedAbsence } from "@/types";
 import {
   useSortTable,
-  type AbsenceSortDirection,
-  type AbsenceSortKey,
 } from "../useSortTable";
 import { getAbsences } from "@/services/getAbsences";
 import { formatAbsences } from "@/utils/formatAbsences";
@@ -18,9 +16,6 @@ export type useAbsencesTableResponse = {
   filterAbsencesByUser: (userId: string, name: string) => void;
   clearFilterAbsencesByUser: () => void;
   filteredUser: { name: string; id: string } | null;
-  sortAbsencesBy: (key: AbsenceSortKey) => void;
-  absenceSortKey: AbsenceSortKey | null;
-  absenceSortDirection: AbsenceSortDirection;
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
@@ -39,14 +34,11 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   });
 
 
-
   const {
     filterAbsencesByUser,
     clearFilterAbsencesByUser,
     filteredUser,
-    sortAbsencesBy,
-    absenceSortKey,
-    absenceSortDirection,
+
     sortedAndFilteredAbsences,
   } = useSortTable({ absences });
 
@@ -57,9 +49,5 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     filterAbsencesByUser,
     clearFilterAbsencesByUser,
     filteredUser,
-    sortAbsencesBy,
-    absenceSortKey,
-    absenceSortDirection,
   };
-
 };
