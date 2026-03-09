@@ -1,20 +1,16 @@
 import { useAbsencesTable } from "@/hooks/useAbsencesTable";
 import { FilteringByUserBanner } from "./FilteringByUserBanner";
 import { Table } from "../Table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "../ui/button";
 import { getAbsenceConflict } from "@/services/getAbsenceConflict";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "../ui/spinner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { AlertTriangleIcon } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 import type { Data, HeaderColumn } from "../Table/types";
+import { Button } from "../Button";
+import { Badge } from "../Badge";
+import { Spinner } from "../Spinner";
+import { Tooltip } from "../Tooltip";
 
 type AbsenceConflictTooltipProps = {
   absenceId: number;
@@ -32,7 +28,7 @@ const AbsenceConflictTooltip = ({ absenceId }: AbsenceConflictTooltipProps) => {
   const conflicts = isError ? null : (data?.conflicts ?? null);
 
   return (
-    <div className="absolute -right-6">
+    <div className="absolute -right-5 top-1/2 -translate-y-1/2">
       {conflictsLoading && (
         <Spinner className="justify-self-center text-primary" />
       )}
@@ -40,15 +36,8 @@ const AbsenceConflictTooltip = ({ absenceId }: AbsenceConflictTooltipProps) => {
         <span className="text-destructive">Unknown</span>
       )}
       {!conflictsLoading && conflicts && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" aria-label="Absence has conflict">
-              <AlertTriangleIcon className="text-destructive mx-auto size-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Absence Conflict</p>
-          </TooltipContent>
+        <Tooltip content={<p>Absence Conflict</p>}>
+          <AlertTriangleIcon className="text-destructive mx-auto size-5" />
         </Tooltip>
       )}
     </div>
@@ -79,7 +68,7 @@ export const AbsencesTable = () => {
           <>
             <Button
               variant="link"
-              className="cursor-pointer text-[#0000EE] relative"
+              className="relative"
               onClick={() => {
                 filterAbsencesByUser(absence.userId, absence.employeeName);
               }}

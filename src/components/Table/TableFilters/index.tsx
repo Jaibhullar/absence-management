@@ -1,4 +1,4 @@
-import { Button } from "../../ui/button";
+import { Button } from "@/components/Button";
 import type { HeaderColumn } from "../types";
 
 const testIds = {

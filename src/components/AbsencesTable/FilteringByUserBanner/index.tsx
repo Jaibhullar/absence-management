@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Button";
 import { ArrowLeftIcon } from "lucide-react";
 
 export type FilteringByUserBannerProps = {
@@ -31,7 +31,7 @@ export const FilteringByUserBanner = ({
         aria-label="Clear filter"
         data-testid={testIds.clearFiltersButton}
       >
-        <ArrowLeftIcon></ArrowLeftIcon>
+        <ArrowLeftIcon className="size-4"></ArrowLeftIcon>
       </Button>
     </div>
   );
