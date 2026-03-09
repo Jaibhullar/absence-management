@@ -8,5 +8,5 @@ export const getFilteredAbsences = (
     return absences;
   }
 
-  return absences.filter((a) => !filteredUser || a.userId === filteredUser.id);
+  return absences.filter((a) => a.userId === filteredUser.id);
 };
