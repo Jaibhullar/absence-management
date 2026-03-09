@@ -1,13 +1,10 @@
 import type { FormattedAbsence } from "@/types";
-import {
-  useSortTable,
-  type AbsenceSortDirection,
-  type AbsenceSortKey,
-} from "../useSortTable";
 import { getAbsences } from "@/services/getAbsences";
 import { formatAbsences } from "@/utils/formatAbsences";
 import { parseDate } from "@/utils/parseDate";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { getFilteredAbsences } from "@/utils/getFilteredAbsences";
 
 export const ABSENCES_QUERY_KEY = ["absences"];
 
@@ -18,12 +15,14 @@ export type useAbsencesTableResponse = {
   filterAbsencesByUser: (userId: string, name: string) => void;
   clearFilterAbsencesByUser: () => void;
   filteredUser: { name: string; id: string } | null;
-  sortAbsencesBy: (key: AbsenceSortKey) => void;
-  absenceSortKey: AbsenceSortKey | null;
-  absenceSortDirection: AbsenceSortDirection;
 };
 
 export const useAbsencesTable = (): useAbsencesTableResponse => {
+  const [filteredUser, setFilteredUser] = useState<{
+    name: string;
+    id: string;
+  } | null>(null);
+
   const {
     data: absences = [],
     isError,
@@ -38,25 +37,28 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     },
   });
 
-  const {
-    filterAbsencesByUser,
-    clearFilterAbsencesByUser,
-    filteredUser,
-    sortAbsencesBy,
-    absenceSortKey,
-    absenceSortDirection,
-    sortedAndFilteredAbsences,
-  } = useSortTable({ absences });
+  const filteredAbsences = useMemo(() => {
+    const result = getFilteredAbsences(absences, filteredUser);
+    return result;
+  }, [absences, filteredUser]);
+
+  const filterAbsencesByUser = (userId: string, name: string) => {
+    setFilteredUser({
+      id: userId,
+      name,
+    });
+  };
+
+  const clearFilterAbsencesByUser = () => {
+    setFilteredUser(null);
+  };
 
   return {
-    absences: sortedAndFilteredAbsences,
+    absences: filteredAbsences,
     absencesError: isError ? "There was an error fetching absences..." : null,
     absencesLoading,
     filterAbsencesByUser,
     clearFilterAbsencesByUser,
     filteredUser,
-    sortAbsencesBy,
-    absenceSortKey,
-    absenceSortDirection,
   };
 };

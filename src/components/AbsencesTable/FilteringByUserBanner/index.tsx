@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 
 export type FilteringByUserBannerProps = {
   filteredUser: {
@@ -18,20 +18,20 @@ export const FilteringByUserBanner = ({
   clearFilterAbsencesByUser,
 }: FilteringByUserBannerProps) => {
   return (
-    <div className="flex items-center justify-between bg-secondary text-secondary-foreground rounded-md p-2 text-sm">
-      <p>
+    <div className="relative bg-secondary text-secondary-foreground rounded-md p-3 text-sm">
+      <p className="text-center">
         Showing absences for
-        <span className="font-bold text-primary">{filteredUser.name}</span>
+        <span className="font-bold text-primary ml-1">{filteredUser.name}</span>
       </p>
       <Button
         variant={"outline"}
         size={"icon-sm"}
-        className="cursor-pointer"
+        className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-2"
         onClick={clearFilterAbsencesByUser}
         aria-label="Clear filter"
         data-testid={testIds.clearFiltersButton}
       >
-        <X></X>
+        <ArrowLeftIcon></ArrowLeftIcon>
       </Button>
     </div>
   );
