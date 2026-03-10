@@ -36,7 +36,20 @@ If this grew bigger, I'd look at colocating state first, then maybe Context if c
 
 ## Reusable Table component
 
-I made the Table generic on purpose - sorting, filtering, pagination all built in. Right now it's just for absences but it could easily be reused for an employees table, reports, whatever. The logic lives in `useTableLogic` to keep the component itself clean.
+I considered two approaches here:
+
+**Option A: "Dumb" table** - Table just renders rows, parent components handle sorting/filtering/pagination. Simpler component, but logic gets scattered across consumers.
+
+**Option B: "Smart" table** - Table owns its own sorting/filtering/pagination logic. More complex internally, but drop-in reusable.
+
+I went with Option B because:
+1. The brief mentioned "consideration for future requirements" - an employees table, reports table, etc. would all need the same features
+2. Logic stays colocated - `useTableLogic` handles state, utils handle transformations, all in one place
+3. The API is still flexible - you can pass `onSort` for backend sorting, or let it sort client-side
+
+That said, if this was a design system used by multiple teams, I'd probably go with Option A (headless components like Tanstack Table) so each team controls their own UX. For a single app with one developer, Option B keeps things simpler to maintain.
+
+The pagination config API is admittedly complex (discriminated unions for each format). In hindsight, I could've simplified to just `paginationFormat` and `recordsPerPage` props since I only ended up using frontend pagination.
 
 ## Client-side sorting/filtering
 
