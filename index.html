@@ -5,46 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>absence-management</title>
-
-    <!-- DNS prefetch for API domain (improves FCP/LCP) -->
-    <link rel="dns-prefetch" href="//api.example.com" />
-
-    <!-- Preload critical fonts if any -->
-    <!-- <link rel="preload" href="/fonts/your-font.woff2" as="font" type="font/woff2" crossorigin /> -->
-
-    <!-- Inline critical CSS for faster FCP -->
-    <style>
-      /* Critical above-the-fold styles */
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-      #root {
-        min-height: 100vh;
-      }
-      /* Skeleton/loading state for initial render */
-      .initial-loader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        color: #6b7280;
-      }
-    </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Initial loading state for better perceived performance -->
-      <div class="initial-loader">Loading...</div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
