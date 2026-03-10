@@ -9,7 +9,7 @@ export const ABSENCE_TABLE_HEADER_COLUMNS = [
   { key: "employeeName", text: "Employee", sortable: true, filterable: true },
   { key: "startDate", text: "Start Date", sortable: true, filterable: true },
   { key: "endDate", text: "End Date", sortable: true, filterable: true },
-  { key: "days", text: "Days", sortable: true, filterable: true },
+  { key: "days", text: "Days", sortable: true },
   { key: "type", text: "Type", sortable: true, filterable: true },
   { key: "approved", text: "Status" },
 ];

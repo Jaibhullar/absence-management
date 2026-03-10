@@ -36,20 +36,13 @@ If this grew bigger, I'd look at colocating state first, then maybe Context if c
 
 ## Reusable Table component
 
-I considered two approaches here:
+I debated this one. Either make a dumb table that just renders rows and let the parent handle sorting/filtering/pagination, or bake all that logic into the table itself.
 
-**Option A: "Dumb" table** - Table just renders rows, parent components handle sorting/filtering/pagination. Simpler component, but logic gets scattered across consumers.
+Went with the "smart" table approach. The brief mentioned future requirements, and I figured an employees table or reports table would need the same features anyway. Felt cleaner to colocate everything in `useTableLogic` rather than scatter it across consumers.
 
-**Option B: "Smart" table** - Table owns its own sorting/filtering/pagination logic. More complex internally, but drop-in reusable.
+The pagination config uses discriminated unions so the Table can handle both frontend and backend pagination. If the API added `page`/`limit` params tomorrow, you'd just flip `mode: "frontend"` to `mode: "backend"` and TypeScript tells you exactly which callbacks to wire up. Easy migration path.
 
-I went with Option B because:
-1. The brief mentioned "consideration for future requirements" - an employees table, reports table, etc. would all need the same features
-2. Logic stays colocated - `useTableLogic` handles state, utils handle transformations, all in one place
-3. The API is still flexible - you can pass `onSort` for backend sorting, or let it sort client-side
-
-That said, if this was a design system used by multiple teams, I'd probably go with Option A (headless components like Tanstack Table) so each team controls their own UX. For a single app with one developer, Option B keeps things simpler to maintain.
-
-The pagination config API is admittedly complex (discriminated unions for each format). In hindsight, I could've simplified to just `paginationFormat` and `recordsPerPage` props since I only ended up using frontend pagination.
+That said, if this was a design system shared across teams, I'd probably go headless (like Tanstack Table) so each team controls their own UX. For a single app it's overkill.
 
 ## Client-side sorting/filtering
 
