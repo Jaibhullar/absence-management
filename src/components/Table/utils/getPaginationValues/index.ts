@@ -6,11 +6,7 @@ export type PaginationValues = {
   recordsPerPage: number;
   numberOfPages: number | undefined;
   enableShowMoreButton: boolean | undefined;
-  enableNextButton: boolean | undefined;
-  enablePrevButton: boolean | undefined;
   onShowMore: (() => void) | undefined;
-  onNextPage: (() => void) | undefined;
-  onPrevPage: (() => void) | undefined;
   onPageChange: ((page: number) => void) | undefined;
 };
 
@@ -30,11 +26,7 @@ export const getPaginationValues = (
       recordsPerPage: DEFAULT_RECORDS_PER_PAGE,
       numberOfPages: undefined,
       enableShowMoreButton: undefined,
-      enableNextButton: undefined,
-      enablePrevButton: undefined,
       onShowMore: undefined,
-      onNextPage: undefined,
-      onPrevPage: undefined,
       onPageChange: undefined,
     };
   }
@@ -49,17 +41,7 @@ export const getPaginationValues = (
       "enableShowMoreButton" in pagination
         ? pagination.enableShowMoreButton
         : undefined,
-    enableNextButton:
-      "enableNextButton" in pagination
-        ? pagination.enableNextButton
-        : undefined,
-    enablePrevButton:
-      "enablePrevButton" in pagination
-        ? pagination.enablePrevButton
-        : undefined,
     onShowMore: "onShowMore" in pagination ? pagination.onShowMore : undefined,
-    onNextPage: "onNextPage" in pagination ? pagination.onNextPage : undefined,
-    onPrevPage: "onPrevPage" in pagination ? pagination.onPrevPage : undefined,
     onPageChange:
       "onPageChange" in pagination ? pagination.onPageChange : undefined,
   };

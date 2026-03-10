@@ -178,92 +178,6 @@ describe("useTableLogic", () => {
       expect(result.current.disableShowMoreButton).toBe(true);
     });
 
-    it("handleNextPage moves to next page", () => {
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          },
-        }),
-      );
-
-      act(() => {
-        result.current.handleNextPage();
-      });
-
-      expect(result.current.currentPage).toBe(2);
-      expect(result.current.displayedData).toHaveLength(2);
-      expect(result.current.displayedData[0].key).toBe("3");
-    });
-
-    it("handlePrevPage moves to previous page", () => {
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          },
-        }),
-      );
-
-      act(() => {
-        result.current.handleNextPage();
-      });
-      act(() => {
-        result.current.handlePrevPage();
-      });
-
-      expect(result.current.currentPage).toBe(1);
-      expect(result.current.displayedData[0].key).toBe("1");
-    });
-
-    it("disables prev button on first page", () => {
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          },
-        }),
-      );
-
-      expect(result.current.disablePrevButton).toBe(true);
-    });
-
-    it("disables next button on last page", () => {
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          },
-        }),
-      );
-
-      act(() => {
-        result.current.handleNextPage();
-      });
-      act(() => {
-        result.current.handleNextPage();
-      });
-
-      expect(result.current.currentPage).toBe(3);
-      expect(result.current.disableNextButton).toBe(true);
-    });
-
     it("handlePageChange navigates to specific page", () => {
       const { result } = renderHook(() =>
         useTableLogic({
@@ -283,6 +197,34 @@ describe("useTableLogic", () => {
 
       expect(result.current.currentPage).toBe(3);
       expect(result.current.displayedData[0].key).toBe("5");
+    });
+
+    it("handlePageChange navigates to specific page and back", () => {
+      const { result } = renderHook(() =>
+        useTableLogic({
+          data: mockData,
+          headerColumns: mockHeaderColumns,
+          pagination: {
+            mode: "frontend",
+            format: "page-numbers",
+            recordsPerPage: 2,
+          },
+        }),
+      );
+
+      act(() => {
+        result.current.handlePageChange(2);
+      });
+
+      expect(result.current.currentPage).toBe(2);
+      expect(result.current.displayedData[0].key).toBe("3");
+
+      act(() => {
+        result.current.handlePageChange(1);
+      });
+
+      expect(result.current.currentPage).toBe(1);
+      expect(result.current.displayedData[0].key).toBe("1");
     });
 
     it("handlePageChange ignores invalid page numbers", () => {
@@ -334,62 +276,6 @@ describe("useTableLogic", () => {
       });
 
       expect(onShowMore).toHaveBeenCalledTimes(1);
-    });
-
-    it("calls onNextPage callback", () => {
-      const onNextPage = jest.fn();
-      const onPrevPage = jest.fn();
-
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "backend",
-            format: "next-prev",
-            recordsPerPage: 2,
-            numberOfPages: 3,
-            enableNextButton: true,
-            enablePrevButton: false,
-            onNextPage,
-            onPrevPage,
-          },
-        }),
-      );
-
-      act(() => {
-        result.current.handleNextPage();
-      });
-
-      expect(onNextPage).toHaveBeenCalledTimes(1);
-    });
-
-    it("calls onPrevPage callback", () => {
-      const onPrevPage = jest.fn();
-      const onNextPage = jest.fn();
-
-      const { result } = renderHook(() =>
-        useTableLogic({
-          data: mockData,
-          headerColumns: mockHeaderColumns,
-          pagination: {
-            mode: "backend",
-            format: "next-prev",
-            recordsPerPage: 2,
-            numberOfPages: 3,
-            enablePrevButton: true,
-            enableNextButton: false,
-            onPrevPage,
-            onNextPage,
-          },
-        }),
-      );
-
-      act(() => {
-        result.current.handlePrevPage();
-      });
-
-      expect(onPrevPage).toHaveBeenCalledTimes(1);
     });
 
     it("calls onPageChange callback with page number", () => {
@@ -594,14 +480,14 @@ describe("useTableLogic", () => {
           headerColumns: mockHeaderColumns,
           pagination: {
             mode: "frontend",
-            format: "next-prev",
+            format: "page-numbers",
             recordsPerPage: 2,
           },
         }),
       );
 
       act(() => {
-        result.current.handleNextPage();
+        result.current.handlePageChange(2);
       });
       expect(result.current.currentPage).toBe(2);
 
@@ -715,14 +601,14 @@ describe("useTableLogic", () => {
           headerColumns: mockHeaderColumns,
           pagination: {
             mode: "frontend",
-            format: "next-prev",
+            format: "page-numbers",
             recordsPerPage: 2,
           },
         }),
       );
 
       act(() => {
-        result.current.handleNextPage();
+        result.current.handlePageChange(2);
       });
       expect(result.current.currentPage).toBe(2);
 
@@ -741,7 +627,7 @@ describe("useTableLogic", () => {
           headerColumns: mockHeaderColumns,
           pagination: {
             mode: "frontend",
-            format: "next-prev",
+            format: "page-numbers",
             recordsPerPage: 2,
           },
         }),
@@ -749,7 +635,7 @@ describe("useTableLogic", () => {
 
       // Make some changes
       act(() => {
-        result.current.handleNextPage();
+        result.current.handlePageChange(2);
       });
       act(() => {
         result.current.handleSortColumn({

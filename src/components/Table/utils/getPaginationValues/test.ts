@@ -11,11 +11,7 @@ describe("getPaginationValues", () => {
       expect(result.recordsPerPage).toBe(10);
       expect(result.numberOfPages).toBeUndefined();
       expect(result.enableShowMoreButton).toBeUndefined();
-      expect(result.enableNextButton).toBeUndefined();
-      expect(result.enablePrevButton).toBeUndefined();
       expect(result.onShowMore).toBeUndefined();
-      expect(result.onNextPage).toBeUndefined();
-      expect(result.onPrevPage).toBeUndefined();
       expect(result.onPageChange).toBeUndefined();
     });
   });
@@ -49,15 +45,13 @@ describe("getPaginationValues", () => {
     it("does not include backend-specific values", () => {
       const config: PaginationConfig = {
         mode: "frontend",
-        format: "next-prev",
+        format: "show-more",
       };
 
       const result = getPaginationValues(config);
 
       expect(result.numberOfPages).toBeUndefined();
       expect(result.onShowMore).toBeUndefined();
-      expect(result.onNextPage).toBeUndefined();
-      expect(result.onPrevPage).toBeUndefined();
       expect(result.onPageChange).toBeUndefined();
     });
   });
@@ -80,32 +74,6 @@ describe("getPaginationValues", () => {
       expect(result.numberOfPages).toBe(5);
       expect(result.onShowMore).toBe(onShowMore);
       expect(result.enableShowMoreButton).toBe(true);
-    });
-  });
-
-  describe("backend pagination - next-prev format", () => {
-    it("extracts next-prev config correctly", () => {
-      const onNextPage = jest.fn();
-      const onPrevPage = jest.fn();
-      const config: PaginationConfig = {
-        mode: "backend",
-        format: "next-prev",
-        numberOfPages: 10,
-        onNextPage,
-        onPrevPage,
-        enableNextButton: true,
-        enablePrevButton: false,
-      };
-
-      const result = getPaginationValues(config);
-
-      expect(result.mode).toBe("backend");
-      expect(result.format).toBe("next-prev");
-      expect(result.numberOfPages).toBe(10);
-      expect(result.onNextPage).toBe(onNextPage);
-      expect(result.onPrevPage).toBe(onPrevPage);
-      expect(result.enableNextButton).toBe(true);
-      expect(result.enablePrevButton).toBe(false);
     });
   });
 

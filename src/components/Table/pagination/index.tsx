@@ -3,21 +3,15 @@ import { Button } from "@/components/ui/Button";
 const testIds = {
   paginationContainer: "pagination-container",
   showMoreButton: "show-more-button",
-  prevButton: "prev-button",
-  nextButton: "next-button",
   pageNumberButton: "page-number-button",
 };
 
 export type PaginationProps = {
-  paginationFormat: "show-more" | "next-prev" | "page-numbers";
+  paginationFormat: "show-more" | "page-numbers";
   numberOfPages: number;
   currentPage: number;
   disableShowMoreButton: boolean;
-  disableNextButton: boolean;
-  disablePrevButton: boolean;
   handleShowMore: () => void;
-  handleNextPage: () => void;
-  handlePrevPage: () => void;
   handlePageChange: (page: number) => void;
 };
 
@@ -26,11 +20,7 @@ export const Pagination = ({
   numberOfPages,
   currentPage,
   disableShowMoreButton,
-  disableNextButton,
-  disablePrevButton,
   handleShowMore,
-  handleNextPage,
-  handlePrevPage,
   handlePageChange,
 }: PaginationProps) => {
   return (
@@ -46,24 +36,6 @@ export const Pagination = ({
         >
           Show More
         </Button>
-      )}
-      {paginationFormat === "next-prev" && (
-        <>
-          <Button
-            onClick={handlePrevPage}
-            disabled={disablePrevButton}
-            data-testid={testIds.prevButton}
-          >
-            Prev
-          </Button>
-          <Button
-            onClick={handleNextPage}
-            disabled={disableNextButton}
-            data-testid={testIds.nextButton}
-          >
-            Next
-          </Button>
-        </>
       )}
       {paginationFormat === "page-numbers" && (
         <>

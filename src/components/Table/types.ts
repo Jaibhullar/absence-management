@@ -1,5 +1,5 @@
 // Pagination format types
-export type PaginationFormat = "show-more" | "next-prev" | "page-numbers";
+export type PaginationFormat = "show-more" | "page-numbers";
 
 // Frontend pagination config
 type FrontendPaginationConfig = {
@@ -18,17 +18,6 @@ type BackendShowMoreConfig = {
   enableShowMoreButton: boolean;
 };
 
-type BackendNextPrevConfig = {
-  mode: "backend";
-  format: "next-prev";
-  recordsPerPage?: number;
-  numberOfPages: number;
-  onNextPage: () => void;
-  onPrevPage: () => void;
-  enableNextButton: boolean;
-  enablePrevButton: boolean;
-};
-
 type BackendPageNumbersConfig = {
   mode: "backend";
   format: "page-numbers";
@@ -37,10 +26,7 @@ type BackendPageNumbersConfig = {
   onPageChange: (page: number) => void;
 };
 
-type BackendPaginationConfig =
-  | BackendShowMoreConfig
-  | BackendNextPrevConfig
-  | BackendPageNumbersConfig;
+type BackendPaginationConfig = BackendShowMoreConfig | BackendPageNumbersConfig;
 
 export type PaginationConfig =
   | FrontendPaginationConfig

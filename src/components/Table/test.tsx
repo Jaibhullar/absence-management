@@ -405,51 +405,6 @@ describe("Table", () => {
       expect(screen.getByText("Diana")).toBeInTheDocument();
     });
 
-    it("renders pagination controls with next-prev format", () => {
-      render(
-        <Table
-          headerColumns={mockHeaderColumns}
-          data={extendedData}
-          pagination={{
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          }}
-        />,
-      );
-
-      expect(
-        screen.getByTestId(paginationTestIds.prevButton),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByTestId(paginationTestIds.nextButton),
-      ).toBeInTheDocument();
-    });
-
-    it("navigates pages with next-prev format", async () => {
-      const user = userEvent.setup();
-
-      render(
-        <Table
-          headerColumns={mockHeaderColumns}
-          data={extendedData}
-          pagination={{
-            mode: "frontend",
-            format: "next-prev",
-            recordsPerPage: 2,
-          }}
-        />,
-      );
-
-      expect(screen.getByText("Alice")).toBeInTheDocument();
-      expect(screen.queryByText("Charlie")).not.toBeInTheDocument();
-
-      await user.click(screen.getByTestId(paginationTestIds.nextButton));
-
-      expect(screen.queryByText("Alice")).not.toBeInTheDocument();
-      expect(screen.getByText("Charlie")).toBeInTheDocument();
-    });
-
     it("renders pagination controls with page-numbers format", () => {
       render(
         <Table
@@ -527,31 +482,6 @@ describe("Table", () => {
 
       await user.click(screen.getByTestId(paginationTestIds.showMoreButton));
       expect(onShowMore).toHaveBeenCalledTimes(1);
-    });
-
-    it("calls onNextPage when Next is clicked", async () => {
-      const user = userEvent.setup();
-      const onNextPage = jest.fn();
-      const onPrevPage = jest.fn();
-
-      render(
-        <Table
-          headerColumns={mockHeaderColumns}
-          data={mockData}
-          pagination={{
-            mode: "backend",
-            format: "next-prev",
-            numberOfPages: 3,
-            onNextPage,
-            onPrevPage,
-            enableNextButton: true,
-            enablePrevButton: true,
-          }}
-        />,
-      );
-
-      await user.click(screen.getByTestId(paginationTestIds.nextButton));
-      expect(onNextPage).toHaveBeenCalledTimes(1);
     });
 
     it("calls onPageChange when page number is clicked", async () => {

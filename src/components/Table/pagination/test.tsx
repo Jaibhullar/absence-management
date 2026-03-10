@@ -10,11 +10,7 @@ describe("Pagination", () => {
     numberOfPages: 5,
     currentPage: 1,
     disableShowMoreButton: false,
-    disableNextButton: false,
-    disablePrevButton: false,
     handleShowMore: jest.fn(),
-    handleNextPage: jest.fn(),
-    handlePrevPage: jest.fn(),
     handlePageChange: jest.fn(),
   };
 
@@ -57,83 +53,11 @@ describe("Pagination", () => {
       expect(screen.getByTestId(testIds.showMoreButton)).toBeDisabled();
     });
 
-    it("does not render Prev/Next buttons in show-more format", () => {
+    it("does not render page number buttons in show-more format", () => {
       render(<Pagination {...defaultProps} paginationFormat="show-more" />);
 
-      expect(screen.queryByTestId(testIds.prevButton)).not.toBeInTheDocument();
-      expect(screen.queryByTestId(testIds.nextButton)).not.toBeInTheDocument();
-    });
-  });
-
-  describe("next-prev format", () => {
-    it("renders Prev and Next buttons", () => {
-      render(<Pagination {...defaultProps} paginationFormat="next-prev" />);
-
-      expect(screen.getByTestId(testIds.prevButton)).toBeInTheDocument();
-      expect(screen.getByTestId(testIds.nextButton)).toBeInTheDocument();
-    });
-
-    it("calls handlePrevPage when Prev button is clicked", async () => {
-      const user = userEvent.setup();
-      const handlePrevPage = jest.fn();
-
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="next-prev"
-          handlePrevPage={handlePrevPage}
-        />,
-      );
-
-      await user.click(screen.getByTestId(testIds.prevButton));
-      expect(handlePrevPage).toHaveBeenCalledTimes(1);
-    });
-
-    it("calls handleNextPage when Next button is clicked", async () => {
-      const user = userEvent.setup();
-      const handleNextPage = jest.fn();
-
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="next-prev"
-          handleNextPage={handleNextPage}
-        />,
-      );
-
-      await user.click(screen.getByTestId(testIds.nextButton));
-      expect(handleNextPage).toHaveBeenCalledTimes(1);
-    });
-
-    it("disables Prev button when disablePrevButton is true", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="next-prev"
-          disablePrevButton={true}
-        />,
-      );
-
-      expect(screen.getByTestId(testIds.prevButton)).toBeDisabled();
-    });
-
-    it("disables Next button when disableNextButton is true", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="next-prev"
-          disableNextButton={true}
-        />,
-      );
-
-      expect(screen.getByTestId(testIds.nextButton)).toBeDisabled();
-    });
-
-    it("does not render Show More button in next-prev format", () => {
-      render(<Pagination {...defaultProps} paginationFormat="next-prev" />);
-
       expect(
-        screen.queryByTestId(testIds.showMoreButton),
+        screen.queryByTestId(testIds.pageNumberButton),
       ).not.toBeInTheDocument();
     });
   });
@@ -214,7 +138,7 @@ describe("Pagination", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("does not render Prev/Next or Show More buttons in page-numbers format", () => {
+    it("does not render Show More buttons in page-numbers format", () => {
       render(
         <Pagination
           {...defaultProps}
@@ -226,8 +150,6 @@ describe("Pagination", () => {
       expect(
         screen.queryByTestId(testIds.showMoreButton),
       ).not.toBeInTheDocument();
-      expect(screen.queryByTestId(testIds.prevButton)).not.toBeInTheDocument();
-      expect(screen.queryByTestId(testIds.nextButton)).not.toBeInTheDocument();
     });
   });
 });

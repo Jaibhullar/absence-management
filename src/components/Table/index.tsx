@@ -35,12 +35,8 @@ export const Table = ({
     filteringEnabled,
     filterableColumns,
     disableShowMoreButton,
-    disableNextButton,
-    disablePrevButton,
     resetTable,
     handleShowMore,
-    handleNextPage,
-    handlePrevPage,
     handlePageChange,
     handleSortColumn,
     handleFiltering,
@@ -164,11 +160,7 @@ export const Table = ({
           numberOfPages={numberOfPages}
           currentPage={currentPage}
           disableShowMoreButton={disableShowMoreButton}
-          disableNextButton={disableNextButton}
-          disablePrevButton={disablePrevButton}
           handleShowMore={handleShowMore}
-          handleNextPage={handleNextPage}
-          handlePrevPage={handlePrevPage}
           handlePageChange={handlePageChange}
         />
       )}

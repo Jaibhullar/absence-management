@@ -42,7 +42,18 @@ Went with the "smart" table approach. The brief mentioned future requirements, a
 
 The pagination config uses discriminated unions so the Table can handle both frontend and backend pagination. If the API added `page`/`limit` params tomorrow, you'd just flip `mode: "frontend"` to `mode: "backend"` and TypeScript tells you exactly which callbacks to wire up. Easy migration path.
 
-That said, if this was a design system shared across teams, I'd probably go headless (like Tanstack Table) so each team controls their own UX. For a single app it's overkill.
+Two pagination formats:
+
+- **Show More** - good for smaller datasets, feels modern, keeps context as you scroll
+- **Page Numbers** - better for larger datasets where users need to jump to specific pages or see total count
+
+I skipped "prev/next" buttons - they're the worst of both worlds. No context like show-more, no direct access like page numbers.
+
+Considered off-the-shelf option:
+
+- **Tanstack Table** - headless so I'd still write all the JSX myself. Good for design systems where multiple teams need different UIs. Overkill for one app.
+
+Building a custom re-usable table took maybe an hour longer but gave me exactly what I needed without the baggage. If requirements got complex (virtual scrolling, column resizing, Excel export) I'd reconsider.
 
 ## Client-side sorting/filtering
 

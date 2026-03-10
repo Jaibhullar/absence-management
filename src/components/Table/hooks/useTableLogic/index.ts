@@ -31,14 +31,10 @@ type UseTableLogicReturn = {
   filteringEnabled: boolean;
   filterableColumns: HeaderColumn[];
   disableShowMoreButton: boolean;
-  disableNextButton: boolean;
-  disablePrevButton: boolean;
 
   // Handlers
   resetTable: () => void;
   handleShowMore: () => void;
-  handleNextPage: () => void;
-  handlePrevPage: () => void;
   handlePageChange: (page: number) => void;
   handleSortColumn: (column: HeaderColumn) => void;
   handleFiltering: (colKey: string, value: string) => void;
@@ -56,11 +52,7 @@ export const useTableLogic = ({
     recordsPerPage,
     numberOfPages: externalNumberOfPages,
     enableShowMoreButton,
-    enableNextButton,
-    enablePrevButton,
     onShowMore,
-    onNextPage,
-    onPrevPage,
     onPageChange,
   } = getPaginationValues(pagination);
 
@@ -100,14 +92,6 @@ export const useTableLogic = ({
     ? !enableShowMoreButton
     : itemsToShow >= fullDataSet.length;
 
-  const disableNextButton = isBackendPagination
-    ? !enableNextButton
-    : currentPage >= Math.ceil(fullDataSet.length / recordsPerPage);
-
-  const disablePrevButton = isBackendPagination
-    ? !enablePrevButton
-    : currentPage <= 1;
-
   // Track previous data to avoid infinite loops
   const prevDataRef = useRef<Data[]>(data);
 
@@ -138,26 +122,6 @@ export const useTableLogic = ({
     }
     setItemsToShow((prev) => prev + recordsPerPage);
   }, [disableShowMoreButton, isBackendPagination, onShowMore, recordsPerPage]);
-
-  const handleNextPage = useCallback(() => {
-    if (disableNextButton) return;
-
-    if (isBackendPagination) {
-      onNextPage?.();
-      return;
-    }
-    setCurrentPage((prev) => prev + 1);
-  }, [disableNextButton, isBackendPagination, onNextPage]);
-
-  const handlePrevPage = useCallback(() => {
-    if (disablePrevButton) return;
-
-    if (isBackendPagination) {
-      onPrevPage?.();
-      return;
-    }
-    setCurrentPage((prev) => prev - 1);
-  }, [disablePrevButton, isBackendPagination, onPrevPage]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -252,14 +216,10 @@ export const useTableLogic = ({
     filteringEnabled,
     filterableColumns,
     disableShowMoreButton,
-    disableNextButton,
-    disablePrevButton,
 
     // Handlers
     resetTable,
     handleShowMore,
-    handleNextPage,
-    handlePrevPage,
     handlePageChange,
     handleSortColumn,
     handleFiltering,
