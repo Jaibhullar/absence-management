@@ -31,11 +31,9 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     queryKey: ABSENCES_QUERY_KEY,
     queryFn: async () => {
       const resp = await getAbsences();
-      return formatAbsences(resp).sort(
-        (a: FormattedAbsence, b: FormattedAbsence) => {
-          return parseDate(b.startDate) - parseDate(a.startDate);
-        },
-      );
+      return formatAbsences(resp).sort((a, b) => {
+        return parseDate(b.startDate) - parseDate(a.startDate);
+      });
     },
   });
 
