@@ -9,7 +9,7 @@ A React application for managing and viewing employee absences with conflict det
 - ⬆️ Sort by employee name, start date, end date, days, or absence type
 - ✅ Visual indicators for approval status (Approved/Pending badges)
 - ⚠️ Conflict detection with lazy-loaded status per absence
-- 📄 Multiple pagination styles (Show More, Next/Prev, Page Numbers)
+- 📄 Pagination (Show More or Page Numbers)
 - 🎨 Responsive UI with Tailwind CSS
 
 ## Tech Stack
