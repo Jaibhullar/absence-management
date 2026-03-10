@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
-import type { Data, HeaderColumn } from "./types";
-import { useTableLogic } from "./useTableLogic";
+import type { Data, HeaderColumn } from "../../types";
+import { useTableLogic } from ".";
 
 const mockHeaderColumns: HeaderColumn[] = [
   { key: "name", text: "Name", sortable: true, filterable: true },
@@ -483,7 +483,7 @@ describe("useTableLogic", () => {
       );
 
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,
@@ -507,14 +507,14 @@ describe("useTableLogic", () => {
       );
 
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,
         });
       });
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,
@@ -538,7 +538,11 @@ describe("useTableLogic", () => {
       );
 
       act(() => {
-        result.current.handleSort({ key: "age", text: "Age", sortable: true });
+        result.current.handleSortColumn({
+          key: "age",
+          text: "Age",
+          sortable: true,
+        });
       });
 
       expect(result.current.displayedData[0].cells[1].value).toBe(25); // Bob
@@ -554,7 +558,7 @@ describe("useTableLogic", () => {
       );
 
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "city",
           text: "City",
           sortable: false,
@@ -577,7 +581,7 @@ describe("useTableLogic", () => {
 
       const column = { key: "name", text: "Name", sortable: true };
       act(() => {
-        result.current.handleSort(column);
+        result.current.handleSortColumn(column);
       });
 
       expect(onSort).toHaveBeenCalledWith(column);
@@ -602,7 +606,7 @@ describe("useTableLogic", () => {
       expect(result.current.currentPage).toBe(2);
 
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,
@@ -748,7 +752,7 @@ describe("useTableLogic", () => {
         result.current.handleNextPage();
       });
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,
@@ -804,7 +808,7 @@ describe("useTableLogic", () => {
 
       // Should not throw
       act(() => {
-        result.current.handleSort({
+        result.current.handleSortColumn({
           key: "name",
           text: "Name",
           sortable: true,

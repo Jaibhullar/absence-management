@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { Tooltip } from ".";
@@ -139,7 +139,9 @@ describe("Tooltip", () => {
 
       expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(500);
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
 
       await waitFor(() => {
         expect(screen.getByRole("tooltip")).toBeInTheDocument();
@@ -155,9 +157,13 @@ describe("Tooltip", () => {
       );
 
       await user.hover(screen.getByRole("button"));
-      jest.advanceTimersByTime(200);
+      await act(async () => {
+        jest.advanceTimersByTime(200);
+      });
       await user.unhover(screen.getByRole("button"));
-      jest.advanceTimersByTime(500);
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
 
       expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
     });

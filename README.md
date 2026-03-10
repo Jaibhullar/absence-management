@@ -45,10 +45,10 @@ The app will be available at `http://localhost:5173`.
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root (or copy `.env.example`):
 
 ```env
-VITE_API_URL=http://your-api-url/
+VITE_API_URL=https://front-end-kata.brighthr.workers.dev/api/
 ```
 
 ## Scripts
@@ -123,4 +123,3 @@ The app expects the following endpoints:
 ## License
 
 Private
-

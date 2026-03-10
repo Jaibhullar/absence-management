@@ -1,5 +1,5 @@
 // Pagination format types
-type PaginationFormat = "show-more" | "next-prev" | "page-numbers";
+export type PaginationFormat = "show-more" | "next-prev" | "page-numbers";
 
 // Frontend pagination config
 type FrontendPaginationConfig = {
@@ -79,3 +79,7 @@ export type SortConfig = {
   key: string;
   direction: "asc" | "desc";
 } | null;
+
+export type FilterConfig = {
+  [columnKey: string]: string;
+};

@@ -1,10 +1,10 @@
 import { TableSkeleton } from "./TableSkeleton";
 import { SortIcon } from "./SortIcon";
 import { TableFilters } from "./TableFilters";
-import { useTableLogic } from "./useTableLogic";
-import type { TableProps, HeaderColumn } from "./types";
+import type { TableProps } from "./types";
 import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
+import { useTableLogic } from "./hooks/useTableLogic";
 
 const testIds = {
   dataTable: "data-table",
@@ -42,7 +42,7 @@ export const Table = ({
     handleNextPage,
     handlePrevPage,
     handlePageChange,
-    handleSort,
+    handleSortColumn,
     handleFiltering,
   } = useTableLogic({
     data,
@@ -50,10 +50,6 @@ export const Table = ({
     pagination,
     onSort,
   });
-
-  const onColumnSort = (column: HeaderColumn) => {
-    handleSort(column);
-  };
 
   if (loading)
     return (
@@ -110,7 +106,7 @@ export const Table = ({
                     : "",
                 )}
                 onClick={
-                  column.sortable ? () => onColumnSort(column) : undefined
+                  column.sortable ? () => handleSortColumn(column) : undefined
                 }
               >
                 {column.customCell ? (

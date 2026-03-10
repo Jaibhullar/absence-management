@@ -2,11 +2,11 @@ import { useAbsencesTable } from "@/hooks/useAbsencesTable";
 import { FilteringByUserBanner } from "./FilteringByUserBanner";
 import { Table } from "../Table";
 import { useState } from "react";
-import { formatDate } from "@/utils/formatDate";
-import type { Data, HeaderColumn } from "../Table/types";
 import { Button } from "../ui/Button";
-import { Badge } from "../ui/Badge";
-import { AbsenceConflictTooltip } from "./AbsenceConflictTooltip";
+import {
+  mapAbsencesToTableData,
+  ABSENCE_TABLE_HEADER_COLUMNS,
+} from "@/utils/mapAbsencesToTableData";
 
 export const AbsencesTable = () => {
   const [paginationFormat, setPaginationFormat] = useState<
@@ -22,60 +22,10 @@ export const AbsencesTable = () => {
     filteredUser,
   } = useAbsencesTable();
 
-  const tableData: Data[] = absences.map((absence) => ({
-    key: absence.id.toString(),
-    cells: [
-      {
-        key: "employeeName",
-        value: absence.employeeName,
-        customCell: (
-          <>
-            <Button
-              variant="link"
-              className="relative"
-              onClick={() => {
-                filterAbsencesByUser(absence.userId, absence.employeeName);
-              }}
-              aria-label={`Filter absences by ${absence.employeeName}`}
-            >
-              {absence.employeeName}
-              <AbsenceConflictTooltip absenceId={absence.id} />
-            </Button>
-          </>
-        ),
-      },
-      {
-        key: "startDate",
-        value: absence.startDate,
-        displayedValue: formatDate(absence.startDate),
-      },
-      {
-        key: "endDate",
-        value: absence.endDate,
-        displayedValue: formatDate(absence.endDate),
-      },
-      { key: "days", value: absence.days, displayedValue: absence.days },
-      { key: "type", value: absence.type, displayedValue: absence.type },
-      {
-        key: "approved",
-        value: absence.approved ? "Approved" : "Pending",
-        customCell: absence.approved ? (
-          <Badge className="bg-green-300 text-green-800">Approved</Badge>
-        ) : (
-          <Badge className="bg-amber-300 text-amber-800">Pending</Badge>
-        ),
-      },
-    ],
-  }));
-
-  const headerColumns: HeaderColumn[] = [
-    { key: "employeeName", text: "Employee", sortable: true, filterable: true },
-    { key: "startDate", text: "Start Date", sortable: true, filterable: true },
-    { key: "endDate", text: "End Date", sortable: true, filterable: true },
-    { key: "days", text: "Days", sortable: true, filterable: true },
-    { key: "type", text: "Type", sortable: true, filterable: true },
-    { key: "approved", text: "Status" },
-  ];
+  const tableData = mapAbsencesToTableData({
+    absences,
+    onFilterByUser: filterAbsencesByUser,
+  });
 
   return (
     <section className="flex flex-col max-h-[calc(100vh-116px)] overflow-hidden pt-4 pb-12 rounded-md space-y-6">
@@ -115,7 +65,7 @@ export const AbsencesTable = () => {
       <div className="flex-1 min-h-0 overflow-auto">
         <Table
           data={tableData}
-          headerColumns={headerColumns}
+          headerColumns={[...ABSENCE_TABLE_HEADER_COLUMNS]}
           loading={absencesLoading}
           error={!!absencesError}
           errorMessage={absencesError ?? undefined}
