@@ -95,6 +95,7 @@ export const Table = ({
                     : "none"
                 }
                 key={column.key}
+                style={column.width ? { width: column.width } : undefined}
                 className={cn(
                   "py-3",
                   column.sortable

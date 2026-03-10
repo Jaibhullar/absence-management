@@ -6,12 +6,30 @@ import { Badge } from "@/components/ui/Badge";
 import { AbsenceConflictTooltip } from "@/components/AbsencesTable/AbsenceConflictTooltip";
 
 export const ABSENCE_TABLE_HEADER_COLUMNS = [
-  { key: "employeeName", text: "Employee", sortable: true, filterable: true },
-  { key: "startDate", text: "Start Date", sortable: true, filterable: true },
-  { key: "endDate", text: "End Date", sortable: true, filterable: true },
-  { key: "days", text: "Days", sortable: true },
-  { key: "type", text: "Type", sortable: true, filterable: true },
-  { key: "approved", text: "Status" },
+  {
+    key: "employeeName",
+    text: "Employee",
+    sortable: true,
+    filterable: true,
+    width: "30%",
+  },
+  {
+    key: "startDate",
+    text: "Start Date",
+    sortable: true,
+    filterable: true,
+    width: "17.5%",
+  },
+  {
+    key: "endDate",
+    text: "End Date",
+    sortable: true,
+    filterable: true,
+    width: "17.5%",
+  },
+  { key: "days", text: "Days", sortable: true, width: "10%" },
+  { key: "type", text: "Type", sortable: true, filterable: true, width: "15%" },
+  { key: "approved", text: "Status", width: "10%" },
 ];
 
 type MapAbsencesToTableDataOptions = {

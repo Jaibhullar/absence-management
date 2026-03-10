@@ -39,7 +39,7 @@ export const AbsencesTable = () => {
           ariaLabel="Employee absences"
           pagination={{
             mode: "frontend",
-            format: "page-numbers",
+            format: "show-more",
             recordsPerPage: 6,
           }}
         />

@@ -49,6 +49,7 @@ export type HeaderColumn = {
   sortable?: boolean;
   filterable?: boolean;
   customCell?: React.ReactNode;
+  width?: string;
 };
 
 export type Data = {
