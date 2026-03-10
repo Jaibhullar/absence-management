@@ -47,7 +47,7 @@ export const Table = ({
     onSort,
   });
 
-  if (loading)
+  if (!loading)
     return (
       <TableSkeleton cols={headerColumns.length} rows={20}></TableSkeleton>
     );

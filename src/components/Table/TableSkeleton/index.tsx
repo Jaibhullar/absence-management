@@ -8,9 +8,16 @@ const testIds = {
 type TableSkeletonProps = {
   cols: number;
   rows: number;
+  headerHeight?: number;
+  rowHeight?: number;
 };
 
-export const TableSkeleton = ({ cols, rows }: TableSkeletonProps) => {
+export const TableSkeleton = ({
+  cols,
+  rows,
+  headerHeight = 32,
+  rowHeight = 28,
+}: TableSkeletonProps) => {
   const rowArray = Array.from({ length: rows }, (_, i) => i);
   const colArray = Array.from({ length: cols }, (_, i) => i);
 
@@ -30,7 +37,8 @@ export const TableSkeleton = ({ cols, rows }: TableSkeletonProps) => {
                 data-testid={testIds.tableSkeletonCol}
               >
                 <Skeleton
-                  className={`w-[calc(100%/${cols})] h-8 mx-6`}
+                  className={`w-[calc(100%/${cols}) mx-6`}
+                  style={{ height: headerHeight }}
                 ></Skeleton>
               </th>
             );
@@ -48,7 +56,8 @@ export const TableSkeleton = ({ cols, rows }: TableSkeletonProps) => {
                     key={`row-${rowIndex}-col-${colIndex}`}
                   >
                     <Skeleton
-                      className={`w-[calc(100%/${cols})] h-7 mx-4`}
+                      className={`w-[calc(100%/${cols})] mx-4`}
+                      style={{ height: rowHeight }}
                     ></Skeleton>
                   </td>
                 );
