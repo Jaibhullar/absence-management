@@ -70,11 +70,12 @@ src/
 │   ├── AbsencesTable/           # Main absences table with conflict detection
 │   │   └── FilteringByUserBanner/  # Banner shown when filtering by user
 │   ├── Table/                   # Reusable table component
+│   │   ├── hooks/useTableLogic/ # Table state management hook
+│   │   ├── utils/               # Table utilities (sorting, filtering, pagination)
 │   │   ├── pagination/          # Pagination controls
 │   │   ├── SortIcon/            # Sort direction indicator
 │   │   ├── TableFilters/        # Column filtering UI
-│   │   ├── TableSkeleton/       # Loading skeleton
-│   │   └── useTableLogic.ts     # Table state management hook
+│   │   └── TableSkeleton/       # Loading skeleton
 │   ├── Container/               # Layout container
 │   ├── Header/                  # App header
 │   ├── Badge.tsx                # Status badges
@@ -91,6 +92,7 @@ src/
 │   ├── formatAbsences/          # Transform API data
 │   ├── formatDate/              # Date formatting
 │   ├── getFilteredAbsences/     # Filter absences by criteria
+│   ├── mapAbsencesToTableData/  # Map absences to table format
 │   └── parseDate/               # Date parsing utilities
 ├── lib/
 │   └── utils.ts                 # Utility functions (cn, etc.)
