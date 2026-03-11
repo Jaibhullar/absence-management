@@ -9,7 +9,7 @@ A React application for managing and viewing employee absences with conflict det
 - ⬆️ Sort by employee name, start date, end date, days, or absence type
 - ✅ Visual indicators for approval status (Approved/Pending badges)
 - ⚠️ Conflict detection with lazy-loaded status per absence
-- 📄 Pagination (Show More or Page Numbers)
+- 📄 Pagination (Page Numbers)
 - 🎨 Responsive UI with Tailwind CSS
 
 ## Tech Stack
@@ -68,32 +68,36 @@ VITE_API_URL=https://front-end-kata.brighthr.workers.dev/api/
 src/
 ├── components/
 │   ├── AbsencesTable/           # Main absences table with conflict detection
-│   │   └── FilteringByUserBanner/  # Banner shown when filtering by user
+│   │   ├── AbsenceConflictTooltip/  # Lazy-loaded conflict indicator
+│   │   └── FilteringByUserBanner/   # Banner shown when filtering by user
 │   ├── Table/                   # Reusable table component
 │   │   ├── hooks/useTableLogic/ # Table state management hook
-│   │   ├── utils/               # Table utilities (sorting, filtering, pagination)
+│   │   ├── utils/               # Table utilities (compareValues, filterData, getPaginationValues)
 │   │   ├── pagination/          # Pagination controls
 │   │   ├── SortIcon/            # Sort direction indicator
 │   │   ├── TableFilters/        # Column filtering UI
 │   │   └── TableSkeleton/       # Loading skeleton
 │   ├── Container/               # Layout container
 │   ├── Header/                  # App header
-│   ├── Badge.tsx                # Status badges
-│   ├── Button.tsx               # Button component
-│   ├── Skeleton.tsx             # Loading skeleton primitive
-│   ├── Spinner.tsx              # Loading spinner
-│   └── Tooltip.tsx              # Tooltip component
+│   └── ui/                      # Reusable UI primitives
+│       ├── Badge.tsx            # Status badges
+│       ├── Button/              # Button component
+│       ├── Skeleton.tsx         # Loading skeleton primitive
+│       ├── Spinner.tsx          # Loading spinner
+│       └── Tooltip/             # Tooltip component
 ├── hooks/
-│   └── useAbsencesTable/        # Absences data fetching & filtering
+│   └── useAbsencesTable/        # Absences data fetching, filtering, sorting & pagination
 ├── services/
 │   ├── getAbsences/             # Fetch absences API
 │   └── getAbsenceConflict/      # Fetch conflict status API
 ├── utils/
 │   ├── formatAbsences/          # Transform API data
 │   ├── formatDate/              # Date formatting
-│   ├── getFilteredAbsences/     # Filter absences by criteria
+│   ├── getFilteredAbsences/     # Filter absences by user
 │   ├── mapAbsencesToTableData/  # Map absences to table format
-│   └── parseDate/               # Date parsing utilities
+│   ├── paginateData/            # Generic pagination utility
+│   ├── parseDate/               # Date parsing utilities
+│   └── sortAbsences/            # Sort absences by field
 ├── lib/
 │   └── utils.ts                 # Utility functions (cn, etc.)
 └── types.ts                     # TypeScript type definitions

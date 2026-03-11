@@ -6,6 +6,10 @@ export type SpinnerProps = React.SVGAttributes<SVGSVGElement> & {
   size?: "sm" | "default" | "lg";
 };
 
+const testIds = {
+  spinner: "spinner",
+};
+
 const sizeStyles = {
   sm: "size-3",
   default: "size-4",
@@ -19,6 +23,7 @@ export const Spinner = ({
 }: SpinnerProps) => {
   return (
     <Loader2Icon
+      data-testid={testIds.spinner}
       role="status"
       aria-label="Loading"
       className={cn("animate-spin", sizeStyles[size], className)}
@@ -26,3 +31,5 @@ export const Spinner = ({
     />
   );
 };
+
+Spinner.testIds = testIds;

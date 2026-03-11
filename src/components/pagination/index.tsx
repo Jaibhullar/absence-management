@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/Button";
 
 const testIds = {
   paginationContainer: "pagination-container",
-  showMoreButton: "show-more-button",
   pageNumberButton: "page-number-button",
 };
 

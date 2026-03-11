@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { Tooltip } from ".";
 
+const testIds = Tooltip.testIds;
+
 describe("Tooltip", () => {
   describe("rendering", () => {
     it("renders children correctly", () => {
@@ -24,7 +26,7 @@ describe("Tooltip", () => {
         </Tooltip>,
       );
 
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
     });
 
     it("does not render tooltip when content is empty", async () => {
@@ -37,7 +39,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
     });
   });
 
@@ -52,8 +54,10 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      expect(screen.getByRole("tooltip")).toBeInTheDocument();
-      expect(screen.getByText("Tooltip content")).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toHaveTextContent(
+        "Tooltip content",
+      );
     });
 
     it("hides tooltip on mouse leave", async () => {
@@ -67,7 +71,7 @@ describe("Tooltip", () => {
       await user.hover(screen.getByRole("button"));
       await user.unhover(screen.getByRole("button"));
 
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
     });
   });
 
@@ -82,8 +86,8 @@ describe("Tooltip", () => {
 
       await user.tab();
 
-      expect(screen.getByRole("tooltip")).toBeInTheDocument();
-      expect(screen.getByText("Focus tooltip")).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toHaveTextContent("Focus tooltip");
     });
 
     it("hides tooltip on blur", async () => {
@@ -101,7 +105,7 @@ describe("Tooltip", () => {
       await user.tab();
 
       // Assert
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
     });
   });
 
@@ -124,7 +128,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      expect(screen.getByRole("tooltip")).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
     });
 
     it("delays showing tooltip when delayDuration is set", async () => {
@@ -137,14 +141,14 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
 
       await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
       await waitFor(() => {
-        expect(screen.getByRole("tooltip")).toBeInTheDocument();
+        expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
       });
     });
 
@@ -165,7 +169,7 @@ describe("Tooltip", () => {
         jest.advanceTimersByTime(500);
       });
 
-      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      expect(screen.queryByTestId(testIds.tooltip)).not.toBeInTheDocument();
     });
   });
 
@@ -180,7 +184,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      const tooltip = screen.getByRole("tooltip");
+      const tooltip = screen.getByTestId(testIds.tooltip);
       expect(tooltip).toHaveClass("bottom-full");
     });
 
@@ -194,7 +198,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      const tooltip = screen.getByRole("tooltip");
+      const tooltip = screen.getByTestId(testIds.tooltip);
       expect(tooltip).toHaveClass("top-full");
     });
 
@@ -208,7 +212,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      const tooltip = screen.getByRole("tooltip");
+      const tooltip = screen.getByTestId(testIds.tooltip);
       expect(tooltip).toHaveClass("right-full");
     });
 
@@ -222,7 +226,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      const tooltip = screen.getByRole("tooltip");
+      const tooltip = screen.getByTestId(testIds.tooltip);
       expect(tooltip).toHaveClass("left-full");
     });
   });
@@ -238,7 +242,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      const tooltip = screen.getByRole("tooltip");
+      const tooltip = screen.getByTestId(testIds.tooltip);
       expect(tooltip).toHaveClass("custom-tooltip-class");
       expect(tooltip).toHaveClass("bg-gray-900"); // Base class still present
     });
@@ -266,7 +270,7 @@ describe("Tooltip", () => {
   });
 
   describe("accessibility", () => {
-    it("has role=tooltip for screen readers", async () => {
+    it("has tooltip for screen readers", async () => {
       const user = userEvent.setup();
       render(
         <Tooltip content="Accessible tooltip">
@@ -276,7 +280,7 @@ describe("Tooltip", () => {
 
       await user.hover(screen.getByRole("button"));
 
-      expect(screen.getByRole("tooltip")).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
     });
 
     it("is accessible via keyboard focus", async () => {
@@ -290,7 +294,7 @@ describe("Tooltip", () => {
       await user.tab();
 
       expect(screen.getByRole("button")).toHaveFocus();
-      expect(screen.getByRole("tooltip")).toBeInTheDocument();
+      expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
     });
   });
 });

@@ -7,129 +7,51 @@ const testIds = Pagination.testIds;
 
 describe("Pagination", () => {
   const defaultProps = {
-    numberOfPages: 5,
-    currentPage: 1,
-    disableShowMoreButton: false,
-    handleShowMore: jest.fn(),
-    handlePageChange: jest.fn(),
+    paginationConfig: {
+      numberOfPages: 5,
+      currentPage: 1,
+      handlePageChange: jest.fn(),
+    },
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("show-more format", () => {
-    it("renders Show More button", () => {
-      render(<Pagination {...defaultProps} paginationFormat="show-more" />);
-
-      expect(screen.getByTestId(testIds.showMoreButton)).toBeInTheDocument();
-    });
-
-    it("calls handleShowMore when Show More button is clicked", async () => {
-      const user = userEvent.setup();
-      const handleShowMore = jest.fn();
-
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="show-more"
-          handleShowMore={handleShowMore}
-        />,
-      );
-
-      await user.click(screen.getByTestId(testIds.showMoreButton));
-      expect(handleShowMore).toHaveBeenCalledTimes(1);
-    });
-
-    it("disables Show More button when disableShowMoreButton is true", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="show-more"
-          disableShowMoreButton={true}
-        />,
-      );
-
-      expect(screen.getByTestId(testIds.showMoreButton)).toBeDisabled();
-    });
-
-    it("does not render page number buttons in show-more format", () => {
-      render(<Pagination {...defaultProps} paginationFormat="show-more" />);
+  describe("rendering", () => {
+    it("renders pagination container", () => {
+      render(<Pagination {...defaultProps} />);
 
       expect(
-        screen.queryByTestId(testIds.pageNumberButton),
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  describe("page-numbers format", () => {
-    it("renders page number buttons", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={3}
-        />,
-      );
-
-      expect(screen.getAllByTestId(testIds.pageNumberButton)).toHaveLength(3);
-    });
-
-    it("calls handlePageChange with correct page number when clicked", async () => {
-      const user = userEvent.setup();
-      const handlePageChange = jest.fn();
-
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={3}
-          handlePageChange={handlePageChange}
-        />,
-      );
-
-      await user.click(screen.getAllByTestId(testIds.pageNumberButton)[1]);
-      expect(handlePageChange).toHaveBeenCalledWith(2);
-
-      await user.click(screen.getAllByTestId(testIds.pageNumberButton)[2]);
-      expect(handlePageChange).toHaveBeenCalledWith(3);
-    });
-
-    it("disables current page button", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={3}
-          currentPage={2}
-        />,
-      );
-
-      const pageButtons = screen.getAllByTestId(testIds.pageNumberButton);
-      expect(pageButtons[0]).not.toBeDisabled();
-      expect(pageButtons[1]).toBeDisabled();
-      expect(pageButtons[2]).not.toBeDisabled();
+        screen.getByTestId(testIds.paginationContainer),
+      ).toBeInTheDocument();
     });
 
     it("renders correct number of page buttons", () => {
-      render(
-        <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={7}
-        />,
-      );
+      render(<Pagination {...defaultProps} />);
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
-      expect(buttons).toHaveLength(7);
+      expect(buttons).toHaveLength(5);
+    });
+
+    it("renders page numbers from 1 to numberOfPages", () => {
+      render(<Pagination {...defaultProps} />);
+
+      expect(screen.getAllByTestId(testIds.pageNumberButton)).toHaveLength(5);
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
+      expect(screen.getByText("3")).toBeInTheDocument();
+      expect(screen.getByText("4")).toBeInTheDocument();
+      expect(screen.getByText("5")).toBeInTheDocument();
     });
 
     it("renders no buttons when numberOfPages is 0", () => {
       render(
         <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={0}
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            numberOfPages: 0,
+          }}
         />,
       );
 
@@ -138,18 +60,169 @@ describe("Pagination", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("does not render Show More buttons in page-numbers format", () => {
+    it("renders single button when numberOfPages is 1", () => {
       render(
         <Pagination
-          {...defaultProps}
-          paginationFormat="page-numbers"
-          numberOfPages={3}
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            numberOfPages: 1,
+          }}
         />,
       );
 
-      expect(
-        screen.queryByTestId(testIds.showMoreButton),
-      ).not.toBeInTheDocument();
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons).toHaveLength(1);
+    });
+  });
+
+  describe("current page state", () => {
+    it("disables button for current page", () => {
+      render(<Pagination {...defaultProps} />);
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons[0]).toBeDisabled();
+    });
+
+    it("enables buttons for non-current pages", () => {
+      render(<Pagination {...defaultProps} />);
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons[1]).not.toBeDisabled();
+      expect(buttons[2]).not.toBeDisabled();
+      expect(buttons[3]).not.toBeDisabled();
+      expect(buttons[4]).not.toBeDisabled();
+    });
+
+    it("disables correct button when currentPage changes", () => {
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            currentPage: 3,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons[0]).not.toBeDisabled();
+      expect(buttons[1]).not.toBeDisabled();
+      expect(buttons[2]).toBeDisabled();
+      expect(buttons[3]).not.toBeDisabled();
+      expect(buttons[4]).not.toBeDisabled();
+    });
+  });
+
+  describe("interactions", () => {
+    it("calls handlePageChange with correct page number when button is clicked", async () => {
+      const handlePageChange = jest.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            handlePageChange,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      await user.click(buttons[1]);
+
+      expect(handlePageChange).toHaveBeenCalledTimes(1);
+      expect(handlePageChange).toHaveBeenCalledWith(2);
+    });
+
+    it("calls handlePageChange with page 5 when last button is clicked", async () => {
+      const handlePageChange = jest.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            handlePageChange,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      await user.click(buttons[4]);
+
+      expect(handlePageChange).toHaveBeenCalledWith(5);
+    });
+
+    it("does not call handlePageChange when current page button is clicked", async () => {
+      const handlePageChange = jest.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            handlePageChange,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      await user.click(buttons[0]);
+
+      expect(handlePageChange).not.toHaveBeenCalled();
+    });
+
+    it("allows clicking multiple different pages", async () => {
+      const handlePageChange = jest.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            handlePageChange,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      await user.click(buttons[1]);
+      await user.click(buttons[3]);
+
+      expect(handlePageChange).toHaveBeenCalledTimes(2);
+      expect(handlePageChange).toHaveBeenNthCalledWith(1, 2);
+      expect(handlePageChange).toHaveBeenNthCalledWith(2, 4);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles large number of pages", () => {
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            numberOfPages: 100,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons).toHaveLength(100);
+    });
+
+    it("handles last page as current page", () => {
+      render(
+        <Pagination
+          paginationConfig={{
+            ...defaultProps.paginationConfig,
+            numberOfPages: 5,
+            currentPage: 5,
+          }}
+        />,
+      );
+
+      const buttons = screen.getAllByTestId(testIds.pageNumberButton);
+      expect(buttons[4]).toBeDisabled();
+      expect(buttons[0]).not.toBeDisabled();
     });
   });
 });
