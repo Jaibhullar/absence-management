@@ -9,7 +9,7 @@ A React application for managing and viewing employee absences with conflict det
 - ⬆️ Sort by employee name, start date, end date, days, or absence type
 - ✅ Visual indicators for approval status (Approved/Pending badges)
 - ⚠️ Conflict detection with lazy-loaded status per absence
-- 📄 Pagination (Show More or Page Numbers)
+- 📄 Pagination (Page Numbers)
 - 🎨 Responsive UI with Tailwind CSS
 
 ## Tech Stack
@@ -21,6 +21,13 @@ A React application for managing and viewing employee absences with conflict det
 - **Lucide React** for icons
 - **date-fns** for date manipulation
 - **Jest 30** + **React Testing Library** for testing
+
+## Future Improvements / What I'd Add Given More Time
+
+- **E2E Tests**: Would add Playwright tests for full user journeys
+- **Backend Pagination**: Currently all data is loaded client-side. With API support, would move to server-side pagination
+- **Batch Conflict API**: Currently N+1 queries for conflicts. Would request a batch endpoint or implement virtual scrolling to mitigate
+- **Accessibility Audit**: While semantic HTML is used, a full a11y audit with screen readers would be beneficial
 
 ## Getting Started
 
@@ -68,32 +75,33 @@ VITE_API_URL=https://front-end-kata.brighthr.workers.dev/api/
 src/
 ├── components/
 │   ├── AbsencesTable/           # Main absences table with conflict detection
-│   │   └── FilteringByUserBanner/  # Banner shown when filtering by user
+│   │   ├── AbsenceConflictTooltip/  # Lazy-loaded conflict indicator
+│   │   └── FilteringByUserBanner/   # Banner shown when filtering by user
 │   ├── Table/                   # Reusable table component
-│   │   ├── hooks/useTableLogic/ # Table state management hook
-│   │   ├── utils/               # Table utilities (sorting, filtering, pagination)
-│   │   ├── pagination/          # Pagination controls
-│   │   ├── SortIcon/            # Sort direction indicator
-│   │   ├── TableFilters/        # Column filtering UI
 │   │   └── TableSkeleton/       # Loading skeleton
+│   ├── pagination/              # Pagination controls
+│   ├── SortIcon/                # Sort direction indicator
 │   ├── Container/               # Layout container
 │   ├── Header/                  # App header
-│   ├── Badge.tsx                # Status badges
-│   ├── Button.tsx               # Button component
-│   ├── Skeleton.tsx             # Loading skeleton primitive
-│   ├── Spinner.tsx              # Loading spinner
-│   └── Tooltip.tsx              # Tooltip component
+│   └── ui/                      # Reusable UI primitives
+│       ├── Badge.tsx            # Status badges
+│       ├── Button/              # Button component
+│       ├── Skeleton.tsx         # Loading skeleton primitive
+│       ├── Spinner.tsx          # Loading spinner
+│       └── Tooltip/             # Tooltip component
 ├── hooks/
-│   └── useAbsencesTable/        # Absences data fetching & filtering
+│   └── useAbsencesTable/        # Absences data fetching, filtering, sorting & pagination
 ├── services/
 │   ├── getAbsences/             # Fetch absences API
 │   └── getAbsenceConflict/      # Fetch conflict status API
 ├── utils/
 │   ├── formatAbsences/          # Transform API data
 │   ├── formatDate/              # Date formatting
-│   ├── getFilteredAbsences/     # Filter absences by criteria
+│   ├── getFilteredAbsences/     # Filter absences by user
 │   ├── mapAbsencesToTableData/  # Map absences to table format
-│   └── parseDate/               # Date parsing utilities
+│   ├── paginateData/            # Generic pagination utility
+│   ├── parseDate/               # Date parsing utilities
+│   └── sortAbsences/            # Sort absences by field
 ├── lib/
 │   └── utils.ts                 # Utility functions (cn, etc.)
 └── types.ts                     # TypeScript type definitions

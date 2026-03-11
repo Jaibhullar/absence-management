@@ -1,20 +1,23 @@
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
-import type { HeaderColumn, SortConfig } from "../types";
-
 const testIds = {
   unsortedIcon: "unsorted-icon",
   ascendingIcon: "ascending-icon",
   descendingIcon: "descending-icon",
 };
 
+export type SortConfig = {
+  key: string;
+  order: "asc" | "desc";
+};
+
 export const SortIcon = ({
   sortConfig,
-  column,
+  columnKey,
 }: {
-  sortConfig?: SortConfig;
-  column: HeaderColumn;
+  sortConfig?: SortConfig | null;
+  columnKey: string;
 }) => {
-  if (!sortConfig || sortConfig.key !== column.key)
+  if (!sortConfig || sortConfig.key !== columnKey)
     return (
       <ArrowUpDown
         className="h-4 w-4"
@@ -22,7 +25,7 @@ export const SortIcon = ({
         data-testid={testIds.unsortedIcon}
       ></ArrowUpDown>
     );
-  if (sortConfig.direction === "asc")
+  if (sortConfig.order === "asc")
     return (
       <ArrowUpIcon
         className="h-4 w-4"

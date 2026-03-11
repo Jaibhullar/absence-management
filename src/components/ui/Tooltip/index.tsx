@@ -11,6 +11,10 @@ export type TooltipProps = {
   className?: string;
 };
 
+const testIds = {
+  tooltip: "tooltip",
+};
+
 const placementStyles: Record<TooltipPlacement, string> = {
   top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
   bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
@@ -72,6 +76,7 @@ export const Tooltip = ({
       {children}
       {isVisible && content && (
         <div
+          data-testid={testIds.tooltip}
           role="tooltip"
           className={cn(
             "absolute z-50 px-3 py-1.5 text-xs text-white bg-gray-900 rounded-md whitespace-nowrap",
@@ -89,3 +94,5 @@ export const Tooltip = ({
     </div>
   );
 };
+
+Tooltip.testIds = testIds;

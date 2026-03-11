@@ -5,33 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { AbsenceConflictTooltip } from "@/components/AbsencesTable/AbsenceConflictTooltip";
 
-export const ABSENCE_TABLE_HEADER_COLUMNS = [
-  {
-    key: "employeeName",
-    text: "Employee",
-    sortable: true,
-    filterable: true,
-    width: "30%",
-  },
-  {
-    key: "startDate",
-    text: "Start Date",
-    sortable: true,
-    filterable: true,
-    width: "17.5%",
-  },
-  {
-    key: "endDate",
-    text: "End Date",
-    sortable: true,
-    filterable: true,
-    width: "17.5%",
-  },
-  { key: "days", text: "Days", sortable: true, width: "10%" },
-  { key: "type", text: "Type", sortable: true, filterable: true, width: "15%" },
-  { key: "approved", text: "Status", width: "10%" },
-];
-
 type MapAbsencesToTableDataOptions = {
   absences: FormattedAbsence[];
   onFilterByUser: (userId: string, name: string) => void;
@@ -66,16 +39,14 @@ export const mapAbsencesToTableData = ({
       },
       {
         key: "startDate",
-        value: absence.startDate,
-        displayedValue: formatDate(absence.startDate),
+        value: formatDate(absence.startDate),
       },
       {
         key: "endDate",
-        value: absence.endDate,
-        displayedValue: formatDate(absence.endDate),
+        value: formatDate(absence.endDate),
       },
-      { key: "days", value: absence.days, displayedValue: absence.days },
-      { key: "type", value: absence.type, displayedValue: absence.type },
+      { key: "days", value: absence.days },
+      { key: "type", value: absence.type },
       {
         key: "approved",
         value: absence.approved ? "Approved" : "Pending",

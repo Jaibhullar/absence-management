@@ -1,10 +1,8 @@
 import { TableSkeleton } from "./TableSkeleton";
-import { SortIcon } from "./SortIcon";
-import { TableFilters } from "./TableFilters";
+import { SortIcon } from "../SortIcon";
 import type { TableProps } from "./types";
-import { Pagination } from "./pagination";
-import { cn } from "@/lib/utils";
-import { useTableLogic } from "./hooks/useTableLogic";
+import { Pagination } from "../pagination";
+import { Button } from "../ui/Button";
 
 const testIds = {
   dataTable: "data-table",
@@ -12,6 +10,7 @@ const testIds = {
   noResultsMessage: "no-results-message",
   dataRow: "data-row",
   headerCell: "header-cell",
+  sortButton: "sort-button",
 };
 
 export const Table = ({
@@ -21,33 +20,10 @@ export const Table = ({
   loading,
   error,
   errorMessage,
-  onSort,
-  pagination,
+  sortConfig,
+  paginationConfig,
 }: TableProps) => {
-  const {
-    displayedData,
-    currentPage,
-    sortConfig,
-    filterConfig,
-    numberOfPages,
-    paginationEnabled,
-    paginationFormat,
-    filteringEnabled,
-    filterableColumns,
-    disableShowMoreButton,
-    resetTable,
-    handleShowMore,
-    handlePageChange,
-    handleSortColumn,
-    handleFiltering,
-  } = useTableLogic({
-    data,
-    headerColumns,
-    pagination,
-    onSort,
-  });
-
-  if (!loading)
+  if (loading)
     return (
       <TableSkeleton cols={headerColumns.length} rows={20}></TableSkeleton>
     );
@@ -66,15 +42,6 @@ export const Table = ({
 
   return (
     <>
-      {filteringEnabled && (
-        <TableFilters
-          filterableColumns={filterableColumns}
-          filterConfig={filterConfig}
-          onFilterChange={handleFiltering}
-          onClearFilters={resetTable}
-        />
-      )}
-
       <table
         aria-label={ariaLabel}
         className="w-full border-collapse min-w-225 border-spacing-0 border"
@@ -89,31 +56,31 @@ export const Table = ({
                 scope="col"
                 aria-sort={
                   sortConfig?.key === column.key
-                    ? sortConfig.direction === "asc"
+                    ? sortConfig.order === "asc"
                       ? "ascending"
                       : "descending"
                     : "none"
                 }
                 key={column.key}
                 style={column.width ? { width: column.width } : undefined}
-                className={cn(
-                  "py-3",
-                  column.sortable
-                    ? "cursor-pointer transition-colors hover:bg-secondary"
-                    : "",
-                )}
-                onClick={
-                  column.sortable ? () => handleSortColumn(column) : undefined
-                }
+                className="py-3"
               >
                 {column.customCell ? (
                   column.customCell
+                ) : column.sortable ? (
+                  <Button
+                    variant="ghost"
+                    data-testid={testIds.sortButton}
+                    className="flex items-center gap-3 justify-center w-full"
+                    onClick={() => column.onSort?.()}
+                    aria-label={`Sort by ${column.text}`}
+                  >
+                    <span>{column.text}</span>
+                    <SortIcon columnKey={column.key} sortConfig={sortConfig} />
+                  </Button>
                 ) : (
                   <div className="flex items-center gap-3 justify-center">
                     <span>{column.text}</span>
-                    {column.sortable && (
-                      <SortIcon column={column} sortConfig={sortConfig} />
-                    )}
                   </div>
                 )}
               </th>
@@ -123,7 +90,7 @@ export const Table = ({
 
         {/* body */}
         <tbody>
-          {displayedData.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={headerColumns.length}>
                 <p
@@ -135,7 +102,7 @@ export const Table = ({
               </td>
             </tr>
           ) : (
-            displayedData.map((row) => (
+            data.map((row) => (
               <tr
                 key={row.key}
                 className="text-center border-t border-b transition-colors hover:bg-secondary text-sm"
@@ -146,7 +113,7 @@ export const Table = ({
                     {cell.customCell ? (
                       cell.customCell
                     ) : (
-                      <span>{cell.displayedValue?.toString()}</span>
+                      <span>{cell.value.toString()}</span>
                     )}
                   </td>
                 ))}
@@ -155,15 +122,8 @@ export const Table = ({
           )}
         </tbody>
       </table>
-      {paginationEnabled && paginationFormat && (
-        <Pagination
-          paginationFormat={paginationFormat}
-          numberOfPages={numberOfPages}
-          currentPage={currentPage}
-          disableShowMoreButton={disableShowMoreButton}
-          handleShowMore={handleShowMore}
-          handlePageChange={handlePageChange}
-        />
+      {paginationConfig && paginationConfig.numberOfPages > 1 && (
+        <Pagination paginationConfig={paginationConfig} />
       )}
     </>
   );

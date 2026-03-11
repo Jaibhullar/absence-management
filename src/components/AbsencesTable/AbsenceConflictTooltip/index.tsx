@@ -8,6 +8,10 @@ type AbsenceConflictTooltipProps = {
   absenceId: number;
 };
 
+const testIds = {
+  unknown: "conflict-unknown",
+};
+
 export const AbsenceConflictTooltip = ({
   absenceId,
 }: AbsenceConflictTooltipProps) => {
@@ -27,7 +31,9 @@ export const AbsenceConflictTooltip = ({
         <Spinner className="justify-self-center text-primary" />
       )}
       {!conflictsLoading && conflicts === null && (
-        <span className="text-destructive">Unknown</span>
+        <span className="text-destructive" data-testid={testIds.unknown}>
+          Unknown
+        </span>
       )}
       {!conflictsLoading && conflicts && (
         <Tooltip content={<p>Absence Conflict</p>}>
@@ -37,3 +43,5 @@ export const AbsenceConflictTooltip = ({
     </div>
   );
 };
+
+AbsenceConflictTooltip.testIds = testIds;

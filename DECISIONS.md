@@ -4,7 +4,7 @@ _Some notes on why I built things the way I did._
 
 ## Folder structure
 
-I went with feature slice - grouping code by feature instead of by type. So `Table/` has its own hooks, utils, sub-components all in one place.
+I went with feature slice - grouping code by feature instead of by type. So `AbsencesTable/` has its own sub-components (`AbsenceConflictTooltip`, `FilteringByUserBanner`) co-located with it.
 
 I considered a flat structure (all components in one folder, all hooks in another) but that gets messy fast. You end up jumping between 5 different folders just to work on one feature.
 
@@ -36,20 +36,19 @@ If this grew bigger, I'd look at colocating state first, then maybe Context if c
 
 ## Reusable Table component
 
-I debated this one. Either make a dumb table that just renders rows and let the parent handle sorting/filtering/pagination, or bake all that logic into the table itself.
+Kept the Table simple - it's just a renderer. Takes data, displays rows. All the sorting and pagination logic lives in `useAbsencesTable` where the data actually lives.
 
-Went with the "smart" table approach. The brief mentioned future requirements, and I figured an employees table or reports table would need the same features anyway. Felt cleaner to colocate everything in `useTableLogic` rather than scatter it across consumers.
+The Table handles:
 
-The pagination config uses discriminated unions so the Table can handle both frontend and backend pagination. If the API added `page`/`limit` params tomorrow, you'd just flip `mode: "frontend"` to `mode: "backend"` and TypeScript tells you exactly which callbacks to wire up. Easy migration path.
+- Loading states (skeleton)
+- Error states
+- Empty states
+- Header rendering with sort indicators
+- Pagination controls (when config is passed)
 
-Two pagination formats:
+But the actual logic (what to sort by, what page we're on) stays with the consumer. Cleaner separation. The Table doesn't care where the data comes from or how it's transformed - it just renders what it's given.
 
-- **Show More** - good for smaller datasets, feels modern, keeps context as you scroll
-- **Page Numbers** - better for larger datasets where users need to jump to specific pages or see total count
-
-I skipped "prev/next" buttons - they're the worst of both worlds. No context like show-more, no direct access like page numbers.
-
-Considered off-the-shelf option:
+Considered off-the-shelf options:
 
 - **Tanstack Table** - headless so I'd still write all the JSX myself. Good for design systems where multiple teams need different UIs. Overkill for one app.
 
@@ -73,6 +72,6 @@ Skipped E2E tests since that would need Playwright and is out of scope.
 
 **Accessibility:** Using semantic HTML (`<table>`, `<th scope="col">`) and ARIA attributes. Keyboard nav works. Not retrofitted, just built in from the start.
 
-**Type safety:** Used discriminated unions for pagination config so TypeScript knows which props are available based on the format. Catches bugs at compile time instead of runtime.
+**Type safety:** Used discriminated unions for sorting config so TypeScript knows which props are available based on the format. Catches bugs at compile time instead of runtime.
 
 **Error handling:** React Query handles it. If fetching absences fails, you see an error. If one conflict check fails, just that row shows an error - doesn't break the whole table.

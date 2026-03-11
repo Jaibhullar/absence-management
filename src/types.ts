@@ -27,3 +27,14 @@ export type FormattedAbsence = {
 };
 
 export type FormattedAbsenceType = "Annual Leave" | "Sickness" | "Medical";
+
+export type AbsenceSortConfig = {
+  key: keyof FormattedAbsence;
+  order: "asc" | "desc";
+};
+
+export type PaginationConfig = {
+  currentPage: number;
+  numberOfPages: number;
+  handlePageChange: (page: number) => void;
+};

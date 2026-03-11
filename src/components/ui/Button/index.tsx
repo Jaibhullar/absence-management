@@ -42,6 +42,10 @@ const sizeStyles: Record<ButtonSize, string> = {
   "icon-lg": "size-10 p-3",
 };
 
+const testIds = {
+  button: "button",
+};
+
 export const Button = ({
   variant = "default",
   size = "default",
@@ -51,6 +55,7 @@ export const Button = ({
 }: ButtonProps) => {
   return (
     <button
+      data-testid={testIds.button}
       className={cn(
         "inline-flex items-center justify-center rounded-md cursor-pointer font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
@@ -65,3 +70,5 @@ export const Button = ({
     </button>
   );
 };
+
+Button.testIds = testIds;
