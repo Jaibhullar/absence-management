@@ -14,7 +14,7 @@ import { paginateData } from "@/utils/paginateData";
 export const ABSENCES_QUERY_KEY = ["absences"];
 export const ITEMS_PER_PAGE = 8;
 
-export type useAbsencesTableResponse = {
+export type UseAbsencesTableResponse = {
   // states
   absences: FormattedAbsence[];
   absencesError: string | null;
@@ -31,7 +31,7 @@ export type useAbsencesTableResponse = {
   paginationConfig: PaginationConfig;
 };
 
-export const useAbsencesTable = (): useAbsencesTableResponse => {
+export const useAbsencesTable = (): UseAbsencesTableResponse => {
   // filtering state
   const [filteredUser, setFilteredUser] = useState<{
     name: string;
@@ -60,20 +60,21 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   });
 
   // filtering, sorting, and paginating absences
-  const absences = useMemo(() => {
+  const sortedAbsences = useMemo(() => {
     const filteredResult = getFilteredAbsences(rawAbsences, filteredUser);
-    const sortedResult = sortAbsences(filteredResult, sortConfig);
-    return sortedResult;
+    return sortAbsences(filteredResult, sortConfig);
   }, [rawAbsences, filteredUser, sortConfig]);
 
-  const numberOfPages = Math.ceil(absences.length / ITEMS_PER_PAGE);
+  const numberOfPages = Math.ceil(sortedAbsences.length / ITEMS_PER_PAGE);
+
+  const paginatedAbsences = useMemo(
+    () => paginateData(sortedAbsences, currentPage, ITEMS_PER_PAGE),
+    [sortedAbsences, currentPage],
+  );
 
   // handlers
   const handleFilterAbsencesByUser = (userId: string, name: string) => {
-    setFilteredUser({
-      id: userId,
-      name,
-    });
+    setFilteredUser({ id: userId, name });
     setCurrentPage(1);
   };
 
@@ -83,17 +84,15 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
   };
 
   const handleSortAbsences = (key: keyof FormattedAbsence) => {
-    if (sortConfig.key === key) {
-      setSortConfig((prevConfig) => ({
-        ...prevConfig,
-        order: prevConfig.order === "asc" ? "desc" : "asc",
-      }));
-    } else {
-      setSortConfig({
-        key,
-        order: "asc",
-      });
-    }
+    setSortConfig((prevConfig) => {
+      if (prevConfig.key === key) {
+        return {
+          ...prevConfig,
+          order: prevConfig.order === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, order: "asc" };
+    });
     setCurrentPage(1);
   };
 
@@ -104,7 +103,7 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
 
   return {
     // states
-    absences: paginateData(absences, currentPage, ITEMS_PER_PAGE),
+    absences: paginatedAbsences,
     absencesError: isError ? "There was an error fetching absences..." : null,
     absencesLoading,
     filteredUser,
