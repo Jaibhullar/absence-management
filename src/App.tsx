@@ -5,7 +5,7 @@ import { Header } from "./components/Header";
 function App() {
   return (
     <SectionContainer>
-      <Header />
+      <Header title="Absence Management" description="Track and manage employee absences" />
       <AbsencesTable />
     </SectionContainer>
   );

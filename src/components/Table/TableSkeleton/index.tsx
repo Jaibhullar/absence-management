@@ -3,6 +3,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 const testIds = {
   tableSkeleton: "table-skeleton",
   tableSkeletonCol: "table-skeleton-col",
+  tableSkeletonRow: "table-skeleton-row",
+  tableSkeletonCell: "table-skeleton-cell",
 };
 
 type TableSkeletonProps = {
@@ -22,51 +24,45 @@ export const TableSkeleton = ({
   const colArray = Array.from({ length: cols }, (_, i) => i);
 
   return (
-    <table
-      className="w-full border-collapse min-w-225 border-spacing-0"
+    <div
+      className="w-full min-w-225"
       data-testid={testIds.tableSkeleton}
+      role="status"
+      aria-busy="true"
       aria-label="Loading table"
     >
-      <thead>
-        <tr>
-          {colArray.map((_, colIndex) => {
-            return (
-              <th
-                key={`header-col-${colIndex}`}
-                className="py-3"
-                data-testid={testIds.tableSkeletonCol}
-              >
-                <Skeleton
-                  className={`w-[calc(100%/${cols}) mx-6`}
-                  style={{ height: headerHeight }}
-                ></Skeleton>
-              </th>
-            );
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {rowArray.map((_, rowIndex) => {
-          return (
-            <tr key={`row-${rowIndex}`}>
-              {colArray.map((_, colIndex) => {
-                return (
-                  <td
-                    className="py-5 border-t border-b"
-                    key={`row-${rowIndex}-col-${colIndex}`}
-                  >
-                    <Skeleton
-                      className={`w-[calc(100%/${cols})] mx-4`}
-                      style={{ height: rowHeight }}
-                    ></Skeleton>
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+      {/* Header row */}
+      <div className="flex">
+        {colArray.map((_, colIndex) => (
+          <div
+            key={`header-col-${colIndex}`}
+            className="flex-1 py-3"
+            data-testid={testIds.tableSkeletonCol}
+          >
+            <Skeleton className="mx-6" style={{ height: headerHeight }} />
+          </div>
+        ))}
+      </div>
+
+      {/* Body rows */}
+      {rowArray.map((_, rowIndex) => (
+        <div
+          key={`row-${rowIndex}`}
+          className="flex border-t border-b"
+          data-testid={testIds.tableSkeletonRow}
+        >
+          {colArray.map((_, colIndex) => (
+            <div
+              className="flex-1 py-5"
+              key={`row-${rowIndex}-col-${colIndex}`}
+              data-testid={testIds.tableSkeletonCell}
+            >
+              <Skeleton className="mx-4" style={{ height: rowHeight }} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 };
 

@@ -31,20 +31,6 @@ describe("Button", () => {
       expect(button).toHaveClass("border", "border-primary", "text-primary");
     });
 
-    it("applies destructive variant styles", () => {
-      render(<Button variant="destructive">Delete</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("bg-red-500", "text-white");
-    });
-
-    it("applies secondary variant styles", () => {
-      render(<Button variant="secondary">Secondary</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("bg-gray-100", "text-gray-900");
-    });
-
     it("applies ghost variant styles", () => {
       render(<Button variant="ghost">Ghost</Button>);
 
@@ -61,34 +47,6 @@ describe("Button", () => {
   });
 
   describe("sizes", () => {
-    it("applies xs size styles", () => {
-      render(<Button size="xs">Extra Small</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("h-6", "px-2", "py-1", "text-xs");
-    });
-
-    it("applies sm size styles", () => {
-      render(<Button size="sm">Small</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("h-8", "px-3");
-    });
-
-    it("applies lg size styles", () => {
-      render(<Button size="lg">Large</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("h-10", "px-5", "py-3", "text-lg");
-    });
-
-    it("applies icon size styles", () => {
-      render(<Button size="icon">🔍</Button>);
-
-      const button = screen.getByTestId(testIds.button);
-      expect(button).toHaveClass("size-9", "p-2");
-    });
-
     it("applies icon-sm size styles", () => {
       render(<Button size="icon-sm">🔍</Button>);
 

@@ -30,18 +30,16 @@ export const Badge = ({
   className,
   children,
   ...props
-}: BadgeProps) => {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-        variantStyles[variant],
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </span>
-  );
-};
+}: BadgeProps) => (
+  <span
+    className={cn(
+      "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+      variantStyles[variant],
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);

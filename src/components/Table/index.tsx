@@ -121,7 +121,7 @@ export const Table = ({
         </tbody>
       </table>
       {paginationConfig && paginationConfig.numberOfPages > 1 && (
-        <Pagination paginationConfig={paginationConfig} />
+        <Pagination {...paginationConfig} />
       )}
     </>
   );

@@ -20,16 +20,14 @@ export const Spinner = ({
   className,
   size = "default",
   ...props
-}: SpinnerProps) => {
-  return (
-    <Loader2Icon
-      data-testid={testIds.spinner}
-      role="status"
-      aria-label="Loading"
-      className={cn("animate-spin", sizeStyles[size], className)}
-      {...props}
-    />
-  );
-};
+}: SpinnerProps) => (
+  <Loader2Icon
+    data-testid={testIds.spinner}
+    role="status"
+    aria-label="Loading"
+    className={cn("animate-spin", sizeStyles[size], className)}
+    {...props}
+  />
+);
 
 Spinner.testIds = testIds;

@@ -7,11 +7,9 @@ const testIds = Pagination.testIds;
 
 describe("Pagination", () => {
   const defaultProps = {
-    paginationConfig: {
-      numberOfPages: 5,
-      currentPage: 1,
-      handlePageChange: jest.fn(),
-    },
+    numberOfPages: 5,
+    currentPage: 1,
+    handlePageChange: jest.fn(),
   };
 
   beforeEach(() => {
@@ -46,14 +44,7 @@ describe("Pagination", () => {
     });
 
     it("renders no buttons when numberOfPages is 0", () => {
-      render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            numberOfPages: 0,
-          }}
-        />,
-      );
+      render(<Pagination {...defaultProps} numberOfPages={0} />);
 
       expect(
         screen.queryByTestId(testIds.pageNumberButton),
@@ -61,14 +52,7 @@ describe("Pagination", () => {
     });
 
     it("renders single button when numberOfPages is 1", () => {
-      render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            numberOfPages: 1,
-          }}
-        />,
-      );
+      render(<Pagination {...defaultProps} numberOfPages={1} />);
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
       expect(buttons).toHaveLength(1);
@@ -94,14 +78,7 @@ describe("Pagination", () => {
     });
 
     it("disables correct button when currentPage changes", () => {
-      render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            currentPage: 3,
-          }}
-        />,
-      );
+      render(<Pagination {...defaultProps} currentPage={3} />);
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
       expect(buttons[0]).not.toBeDisabled();
@@ -118,12 +95,7 @@ describe("Pagination", () => {
       const user = userEvent.setup();
 
       render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            handlePageChange,
-          }}
-        />,
+        <Pagination {...defaultProps} handlePageChange={handlePageChange} />,
       );
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
@@ -138,12 +110,7 @@ describe("Pagination", () => {
       const user = userEvent.setup();
 
       render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            handlePageChange,
-          }}
-        />,
+        <Pagination {...defaultProps} handlePageChange={handlePageChange} />,
       );
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
@@ -157,12 +124,7 @@ describe("Pagination", () => {
       const user = userEvent.setup();
 
       render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            handlePageChange,
-          }}
-        />,
+        <Pagination {...defaultProps} handlePageChange={handlePageChange} />,
       );
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
@@ -176,12 +138,7 @@ describe("Pagination", () => {
       const user = userEvent.setup();
 
       render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            handlePageChange,
-          }}
-        />,
+        <Pagination {...defaultProps} handlePageChange={handlePageChange} />,
       );
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
@@ -196,14 +153,7 @@ describe("Pagination", () => {
 
   describe("edge cases", () => {
     it("handles large number of pages", () => {
-      render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            numberOfPages: 100,
-          }}
-        />,
-      );
+      render(<Pagination {...defaultProps} numberOfPages={100} />);
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);
       expect(buttons).toHaveLength(100);
@@ -211,13 +161,7 @@ describe("Pagination", () => {
 
     it("handles last page as current page", () => {
       render(
-        <Pagination
-          paginationConfig={{
-            ...defaultProps.paginationConfig,
-            numberOfPages: 5,
-            currentPage: 5,
-          }}
-        />,
+        <Pagination {...defaultProps} numberOfPages={5} currentPage={5} />,
       );
 
       const buttons = screen.getAllByTestId(testIds.pageNumberButton);

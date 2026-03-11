@@ -9,10 +9,6 @@ export type SectionContainerProps = {
 export const SectionContainer = ({
   children,
   className,
-}: SectionContainerProps) => {
-  return (
-    <div className={cn("w-[90vw] max-w-7xl mx-auto", className)}>
-      {children}
-    </div>
-  );
-};
+}: SectionContainerProps) => (
+  <div className={cn("w-[90vw] max-w-7xl mx-auto", className)}>{children}</div>
+);
