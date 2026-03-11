@@ -1,35 +1,35 @@
 import { Skeleton } from "@/components/ui/Skeleton";
 
 const testIds = {
-  tableSkeleton: "table-skeleton",
-  tableSkeletonCol: "table-skeleton-col",
-  tableSkeletonRow: "table-skeleton-row",
-  tableSkeletonCell: "table-skeleton-cell",
+  gridSkeleton: "grid-skeleton",
+  gridSkeletonCol: "grid-skeleton-col",
+  gridSkeletonRow: "grid-skeleton-row",
+  gridSkeletonCell: "grid-skeleton-cell",
 };
 
-type TableSkeletonProps = {
+type GridSkeletonProps = {
   cols: number;
   rows: number;
   headerHeight?: number;
   rowHeight?: number;
 };
 
-export const TableSkeleton = ({
+export const GridSkeleton = ({
   cols,
   rows,
   headerHeight = 32,
   rowHeight = 28,
-}: TableSkeletonProps) => {
+}: GridSkeletonProps) => {
   const rowArray = Array.from({ length: rows }, (_, i) => i);
   const colArray = Array.from({ length: cols }, (_, i) => i);
 
   return (
     <div
       className="w-full min-w-225"
-      data-testid={testIds.tableSkeleton}
+      data-testid={testIds.gridSkeleton}
       role="status"
       aria-busy="true"
-      aria-label="Loading table"
+      aria-label="Loading grid"
     >
       {/* Header row */}
       <div className="flex">
@@ -37,7 +37,7 @@ export const TableSkeleton = ({
           <div
             key={`header-col-${colIndex}`}
             className="flex-1 py-3"
-            data-testid={testIds.tableSkeletonCol}
+            data-testid={testIds.gridSkeletonCol}
           >
             <Skeleton className="mx-6" style={{ height: headerHeight }} />
           </div>
@@ -49,13 +49,13 @@ export const TableSkeleton = ({
         <div
           key={`row-${rowIndex}`}
           className="flex border-t border-b"
-          data-testid={testIds.tableSkeletonRow}
+          data-testid={testIds.gridSkeletonRow}
         >
           {colArray.map((_, colIndex) => (
             <div
               className="flex-1 py-5"
               key={`row-${rowIndex}-col-${colIndex}`}
-              data-testid={testIds.tableSkeletonCell}
+              data-testid={testIds.gridSkeletonCell}
             >
               <Skeleton className="mx-4" style={{ height: rowHeight }} />
             </div>
@@ -66,4 +66,4 @@ export const TableSkeleton = ({
   );
 };
 
-TableSkeleton.testIds = testIds;
+GridSkeleton.testIds = testIds;

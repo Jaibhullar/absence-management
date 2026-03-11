@@ -1,4 +1,4 @@
-import { TableSkeleton } from "./TableSkeleton";
+import { GridSkeleton } from "../GridSkeleton";
 import { SortIcon } from "../SortIcon";
 import type { TableProps } from "./types";
 import { Pagination } from "../pagination";
@@ -23,8 +23,7 @@ export const Table = ({
   sortConfig,
   paginationConfig,
 }: TableProps) => {
-  if (loading)
-    return <TableSkeleton cols={headerColumns.length} rows={8}></TableSkeleton>;
+  if (loading) return <GridSkeleton cols={headerColumns.length} rows={8} />;
 
   if (error) {
     return (
@@ -106,8 +105,8 @@ export const Table = ({
                 className="text-center border-t border-b transition-colors hover:bg-secondary text-sm"
                 data-testid={testIds.dataRow}
               >
-                {row.cells.map((cell, index) => (
-                  <td key={index} className="py-3">
+                {row.cells.map((cell) => (
+                  <td key={cell.key} className="py-3">
                     {cell.customCell ? (
                       cell.customCell
                     ) : (
