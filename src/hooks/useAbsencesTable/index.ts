@@ -45,7 +45,6 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
 
   // pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(ITEMS_PER_PAGE);
 
   // fetching absences
   const {
@@ -67,7 +66,7 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
     return sortedResult;
   }, [rawAbsences, filteredUser, sortConfig]);
 
-  const numberOfPages = Math.ceil(absences.length / itemsPerPage);
+  const numberOfPages = Math.ceil(absences.length / ITEMS_PER_PAGE);
 
   // handlers
   const handleFilterAbsencesByUser = (userId: string, name: string) => {
@@ -75,10 +74,12 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
       id: userId,
       name,
     });
+    setCurrentPage(1);
   };
 
   const handleClearFilterAbsencesByUser = () => {
     setFilteredUser(null);
+    setCurrentPage(1);
   };
 
   const handleSortAbsences = (key: keyof FormattedAbsence) => {
@@ -93,15 +94,17 @@ export const useAbsencesTable = (): useAbsencesTableResponse => {
         order: "asc",
       });
     }
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    const clampedPage = Math.max(1, Math.min(page, numberOfPages));
+    setCurrentPage(clampedPage);
   };
 
   return {
     // states
-    absences: paginateData(absences, currentPage, itemsPerPage),
+    absences: paginateData(absences, currentPage, ITEMS_PER_PAGE),
     absencesError: isError ? "There was an error fetching absences..." : null,
     absencesLoading,
     filteredUser,

@@ -134,7 +134,7 @@ describe("Table", () => {
   });
 
   describe("sorting", () => {
-    it("calls onSort when sortable header is clicked", async () => {
+    it("calls onSort when sortable header button is clicked", async () => {
       const user = userEvent.setup();
       const onSort = jest.fn();
 
@@ -145,14 +145,13 @@ describe("Table", () => {
 
       render(<Table {...defaultProps} headerColumns={sortableHeaders} />);
 
-      const headers = screen.getAllByTestId(testIds.headerCell);
-      await user.click(headers[0]);
+      const sortButton = screen.getByTestId(testIds.sortButton);
+      await user.click(sortButton);
 
       expect(onSort).toHaveBeenCalledTimes(1);
     });
 
-    it("does not call onSort when non-sortable header is clicked", async () => {
-      const user = userEvent.setup();
+    it("does not render sort button for non-sortable header", async () => {
       const onSort = jest.fn();
 
       const sortableHeaders: HeaderColumn[] = [
@@ -162,10 +161,36 @@ describe("Table", () => {
 
       render(<Table {...defaultProps} headerColumns={sortableHeaders} />);
 
-      const headers = screen.getAllByTestId(testIds.headerCell);
-      await user.click(headers[1]);
+      const sortButtons = screen.getAllByTestId(testIds.sortButton);
+      expect(sortButtons).toHaveLength(1);
+    });
 
-      expect(onSort).not.toHaveBeenCalled();
+    it("sort button is keyboard accessible", async () => {
+      const user = userEvent.setup();
+      const onSort = jest.fn();
+
+      const sortableHeaders: HeaderColumn[] = [
+        { key: "name", text: "Name", sortable: true, onSort },
+      ];
+
+      render(<Table {...defaultProps} headerColumns={sortableHeaders} />);
+
+      const sortButton = screen.getByTestId(testIds.sortButton);
+      sortButton.focus();
+      await user.keyboard("{Enter}");
+
+      expect(onSort).toHaveBeenCalledTimes(1);
+    });
+
+    it("sort button has correct aria-label", () => {
+      const sortableHeaders: HeaderColumn[] = [
+        { key: "name", text: "Name", sortable: true, onSort: jest.fn() },
+      ];
+
+      render(<Table {...defaultProps} headerColumns={sortableHeaders} />);
+
+      const sortButton = screen.getByTestId(testIds.sortButton);
+      expect(sortButton).toHaveAttribute("aria-label", "Sort by Name");
     });
 
     it("displays correct aria-sort for ascending sort", () => {

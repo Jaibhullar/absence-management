@@ -2,7 +2,7 @@ import { TableSkeleton } from "./TableSkeleton";
 import { SortIcon } from "../SortIcon";
 import type { TableProps } from "./types";
 import { Pagination } from "../pagination";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/Button";
 
 const testIds = {
   dataTable: "data-table",
@@ -10,6 +10,7 @@ const testIds = {
   noResultsMessage: "no-results-message",
   dataRow: "data-row",
   headerCell: "header-cell",
+  sortButton: "sort-button",
 };
 
 export const Table = ({
@@ -62,25 +63,24 @@ export const Table = ({
                 }
                 key={column.key}
                 style={column.width ? { width: column.width } : undefined}
-                className={cn(
-                  "py-3",
-                  column.sortable
-                    ? "cursor-pointer transition-colors hover:bg-secondary"
-                    : "",
-                )}
-                onClick={column.sortable ? () => column.onSort?.() : undefined}
+                className="py-3"
               >
                 {column.customCell ? (
                   column.customCell
+                ) : column.sortable ? (
+                  <Button
+                    variant="ghost"
+                    data-testid={testIds.sortButton}
+                    className="flex items-center gap-3 justify-center w-full"
+                    onClick={() => column.onSort?.()}
+                    aria-label={`Sort by ${column.text}`}
+                  >
+                    <span>{column.text}</span>
+                    <SortIcon columnKey={column.key} sortConfig={sortConfig} />
+                  </Button>
                 ) : (
                   <div className="flex items-center gap-3 justify-center">
                     <span>{column.text}</span>
-                    {column.sortable && (
-                      <SortIcon
-                        columnKey={column.key}
-                        sortConfig={sortConfig}
-                      />
-                    )}
                   </div>
                 )}
               </th>

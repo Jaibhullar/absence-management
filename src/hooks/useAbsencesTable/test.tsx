@@ -489,5 +489,105 @@ describe("useAbsencesTable", () => {
       // user-1 has only 2 absences, so 1 page
       expect(result.current.paginationConfig.numberOfPages).toBe(1);
     });
+
+    it("should reset currentPage to 1 when filtering", async () => {
+      mockGetAbsences.mockResolvedValue(mockAbsencesResponse);
+
+      const { result } = renderHook(() => useAbsencesTable(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => {
+        expect(result.current.absencesLoading).toBe(false);
+      });
+
+      act(() => {
+        result.current.paginationConfig.handlePageChange(2);
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(2);
+
+      act(() => {
+        result.current.handleFilterAbsencesByUser("user-1", "John Doe");
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(1);
+    });
+
+    it("should reset currentPage to 1 when clearing filter", async () => {
+      mockGetAbsences.mockResolvedValue(mockAbsencesResponse);
+
+      const { result } = renderHook(() => useAbsencesTable(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => {
+        expect(result.current.absencesLoading).toBe(false);
+      });
+
+      act(() => {
+        result.current.handleFilterAbsencesByUser("user-1", "John Doe");
+      });
+
+      act(() => {
+        result.current.paginationConfig.handlePageChange(2);
+      });
+
+      act(() => {
+        result.current.handleClearFilterAbsencesByUser();
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(1);
+    });
+
+    it("should reset currentPage to 1 when sorting", async () => {
+      mockGetAbsences.mockResolvedValue(mockAbsencesResponse);
+
+      const { result } = renderHook(() => useAbsencesTable(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => {
+        expect(result.current.absencesLoading).toBe(false);
+      });
+
+      act(() => {
+        result.current.paginationConfig.handlePageChange(2);
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(2);
+
+      act(() => {
+        result.current.handleSortAbsences("employeeName");
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(1);
+    });
+
+    it("should clamp page number to valid range", async () => {
+      mockGetAbsences.mockResolvedValue(mockAbsencesResponse);
+
+      const { result } = renderHook(() => useAbsencesTable(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => {
+        expect(result.current.absencesLoading).toBe(false);
+      });
+
+      // Try to go to page 100 (out of range)
+      act(() => {
+        result.current.paginationConfig.handlePageChange(100);
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(2); // Should clamp to max (2 pages)
+
+      // Try to go to page 0 (out of range)
+      act(() => {
+        result.current.paginationConfig.handlePageChange(0);
+      });
+
+      expect(result.current.paginationConfig.currentPage).toBe(1); // Should clamp to min (1)
+    });
   });
 });
