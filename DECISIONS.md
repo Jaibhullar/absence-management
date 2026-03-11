@@ -4,7 +4,7 @@ _Some notes on why I built things the way I did._
 
 ## Folder structure
 
-I went with feature slice - grouping code by feature instead of by type. So `Table/` has its own hooks, utils, sub-components all in one place.
+I went with feature slice - grouping code by feature instead of by type. So `AbsencesTable/` has its own sub-components (`AbsenceConflictTooltip`, `FilteringByUserBanner`) co-located with it.
 
 I considered a flat structure (all components in one folder, all hooks in another) but that gets messy fast. You end up jumping between 5 different folders just to work on one feature.
 

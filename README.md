@@ -22,6 +22,13 @@ A React application for managing and viewing employee absences with conflict det
 - **date-fns** for date manipulation
 - **Jest 30** + **React Testing Library** for testing
 
+## Future Improvements / What I'd Add Given More Time
+
+- **E2E Tests**: Would add Playwright tests for full user journeys
+- **Backend Pagination**: Currently all data is loaded client-side. With API support, would move to server-side pagination
+- **Batch Conflict API**: Currently N+1 queries for conflicts. Would request a batch endpoint or implement virtual scrolling to mitigate
+- **Accessibility Audit**: While semantic HTML is used, a full a11y audit with screen readers would be beneficial
+
 ## Getting Started
 
 ### Prerequisites
@@ -71,12 +78,9 @@ src/
 │   │   ├── AbsenceConflictTooltip/  # Lazy-loaded conflict indicator
 │   │   └── FilteringByUserBanner/   # Banner shown when filtering by user
 │   ├── Table/                   # Reusable table component
-│   │   ├── hooks/useTableLogic/ # Table state management hook
-│   │   ├── utils/               # Table utilities (compareValues, filterData, getPaginationValues)
-│   │   ├── pagination/          # Pagination controls
-│   │   ├── SortIcon/            # Sort direction indicator
-│   │   ├── TableFilters/        # Column filtering UI
 │   │   └── TableSkeleton/       # Loading skeleton
+│   ├── pagination/              # Pagination controls
+│   ├── SortIcon/                # Sort direction indicator
 │   ├── Container/               # Layout container
 │   ├── Header/                  # App header
 │   └── ui/                      # Reusable UI primitives
