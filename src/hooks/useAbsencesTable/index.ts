@@ -12,7 +12,7 @@ import { sortAbsences } from "@/utils/sortAbsences";
 import { paginateData } from "@/utils/paginateData";
 
 export const ABSENCES_QUERY_KEY = ["absences"];
-export const ITEMS_PER_PAGE = 5;
+export const ITEMS_PER_PAGE = 8;
 
 export type useAbsencesTableResponse = {
   // states

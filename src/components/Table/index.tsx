@@ -24,9 +24,7 @@ export const Table = ({
   paginationConfig,
 }: TableProps) => {
   if (loading)
-    return (
-      <TableSkeleton cols={headerColumns.length} rows={20}></TableSkeleton>
-    );
+    return <TableSkeleton cols={headerColumns.length} rows={8}></TableSkeleton>;
 
   if (error) {
     return (
@@ -71,7 +69,7 @@ export const Table = ({
                   <Button
                     variant="ghost"
                     data-testid={testIds.sortButton}
-                    className="flex items-center gap-3 justify-center w-full"
+                    className="flex items-center gap-3 justify-center w-full text-foreground font-bold text-md"
                     onClick={() => column.onSort?.()}
                     aria-label={`Sort by ${column.text}`}
                   >
