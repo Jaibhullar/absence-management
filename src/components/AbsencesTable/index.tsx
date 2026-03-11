@@ -1,24 +1,64 @@
 import { useAbsencesTable } from "@/hooks/useAbsencesTable";
 import { FilteringByUserBanner } from "./FilteringByUserBanner";
 import { Table } from "../Table";
-import {
-  mapAbsencesToTableData,
-  ABSENCE_TABLE_HEADER_COLUMNS,
-} from "@/utils/mapAbsencesToTableData";
+import { mapAbsencesToTableData } from "@/utils/mapAbsencesToTableData";
+import type { HeaderColumn } from "../Table/types";
 
 export const AbsencesTable = () => {
   const {
     absences,
     absencesLoading,
     absencesError,
-    filterAbsencesByUser,
-    clearFilterAbsencesByUser,
     filteredUser,
+    sortConfig,
+    paginationConfig,
+    handleFilterAbsencesByUser,
+    handleClearFilterAbsencesByUser,
+    handleSortAbsences,
   } = useAbsencesTable();
+
+  const ABSENCE_TABLE_HEADER_COLUMNS: HeaderColumn[] = [
+    {
+      key: "employeeName",
+      text: "Employee",
+      sortable: true,
+      onSort: () => handleSortAbsences("employeeName"),
+      width: "30%",
+    },
+    {
+      key: "startDate",
+      text: "Start Date",
+      sortable: true,
+      onSort: () => handleSortAbsences("startDate"),
+      width: "17.5%",
+    },
+    {
+      key: "endDate",
+      text: "End Date",
+      sortable: true,
+      onSort: () => handleSortAbsences("endDate"),
+      width: "17.5%",
+    },
+    {
+      key: "days",
+      text: "Days",
+      sortable: true,
+      onSort: () => handleSortAbsences("days"),
+      width: "10%",
+    },
+    {
+      key: "type",
+      text: "Type",
+      sortable: true,
+      onSort: () => handleSortAbsences("type"),
+      width: "15%",
+    },
+    { key: "approved", text: "Status", width: "10%" },
+  ];
 
   const tableData = mapAbsencesToTableData({
     absences,
-    onFilterByUser: filterAbsencesByUser,
+    onFilterByUser: handleFilterAbsencesByUser,
   });
 
   return (
@@ -26,7 +66,7 @@ export const AbsencesTable = () => {
       {filteredUser && (
         <FilteringByUserBanner
           filteredUser={filteredUser}
-          clearFilterAbsencesByUser={clearFilterAbsencesByUser}
+          clearFilterAbsencesByUser={handleClearFilterAbsencesByUser}
         />
       )}
       <div className="flex-1 min-h-0 overflow-auto">
@@ -37,11 +77,8 @@ export const AbsencesTable = () => {
           error={!!absencesError}
           errorMessage={absencesError ?? undefined}
           ariaLabel="Employee absences"
-          pagination={{
-            mode: "frontend",
-            format: "show-more",
-            recordsPerPage: 6,
-          }}
+          paginationConfig={paginationConfig}
+          sortConfig={sortConfig}
         />
       </div>
     </section>

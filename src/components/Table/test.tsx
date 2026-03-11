@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 import { Table } from ".";
 import type { Data, HeaderColumn } from "./types";
 import { TableFilters } from "./TableFilters";
-import { Pagination } from "./pagination";
-import { SortIcon } from "./SortIcon";
+import { Pagination } from "../pagination";
+import { SortIcon } from "../SortIcon";
 
 const testIds = Table.testIds;
 const tableFilterTestIds = TableFilters.testIds;

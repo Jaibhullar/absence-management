@@ -1,10 +1,8 @@
 import { TableSkeleton } from "./TableSkeleton";
-import { SortIcon } from "./SortIcon";
-import { TableFilters } from "./TableFilters";
+import { SortIcon } from "../SortIcon";
 import type { TableProps } from "./types";
-import { Pagination } from "./pagination";
+import { Pagination } from "../pagination";
 import { cn } from "@/lib/utils";
-import { useTableLogic } from "./hooks/useTableLogic";
 
 const testIds = {
   dataTable: "data-table",
@@ -21,33 +19,10 @@ export const Table = ({
   loading,
   error,
   errorMessage,
-  onSort,
-  pagination,
+  sortConfig,
+  paginationConfig,
 }: TableProps) => {
-  const {
-    displayedData,
-    currentPage,
-    sortConfig,
-    filterConfig,
-    numberOfPages,
-    paginationEnabled,
-    paginationFormat,
-    filteringEnabled,
-    filterableColumns,
-    disableShowMoreButton,
-    resetTable,
-    handleShowMore,
-    handlePageChange,
-    handleSortColumn,
-    handleFiltering,
-  } = useTableLogic({
-    data,
-    headerColumns,
-    pagination,
-    onSort,
-  });
-
-  if (!loading)
+  if (loading)
     return (
       <TableSkeleton cols={headerColumns.length} rows={20}></TableSkeleton>
     );
@@ -66,15 +41,6 @@ export const Table = ({
 
   return (
     <>
-      {filteringEnabled && (
-        <TableFilters
-          filterableColumns={filterableColumns}
-          filterConfig={filterConfig}
-          onFilterChange={handleFiltering}
-          onClearFilters={resetTable}
-        />
-      )}
-
       <table
         aria-label={ariaLabel}
         className="w-full border-collapse min-w-225 border-spacing-0 border"
@@ -89,7 +55,7 @@ export const Table = ({
                 scope="col"
                 aria-sort={
                   sortConfig?.key === column.key
-                    ? sortConfig.direction === "asc"
+                    ? sortConfig.order === "asc"
                       ? "ascending"
                       : "descending"
                     : "none"
@@ -102,9 +68,7 @@ export const Table = ({
                     ? "cursor-pointer transition-colors hover:bg-secondary"
                     : "",
                 )}
-                onClick={
-                  column.sortable ? () => handleSortColumn(column) : undefined
-                }
+                onClick={column.sortable ? () => column.onSort?.() : undefined}
               >
                 {column.customCell ? (
                   column.customCell
@@ -112,7 +76,10 @@ export const Table = ({
                   <div className="flex items-center gap-3 justify-center">
                     <span>{column.text}</span>
                     {column.sortable && (
-                      <SortIcon column={column} sortConfig={sortConfig} />
+                      <SortIcon
+                        columnKey={column.key}
+                        sortConfig={sortConfig}
+                      />
                     )}
                   </div>
                 )}
@@ -123,7 +90,7 @@ export const Table = ({
 
         {/* body */}
         <tbody>
-          {displayedData.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={headerColumns.length}>
                 <p
@@ -135,7 +102,7 @@ export const Table = ({
               </td>
             </tr>
           ) : (
-            displayedData.map((row) => (
+            data.map((row) => (
               <tr
                 key={row.key}
                 className="text-center border-t border-b transition-colors hover:bg-secondary text-sm"
@@ -146,7 +113,7 @@ export const Table = ({
                     {cell.customCell ? (
                       cell.customCell
                     ) : (
-                      <span>{cell.displayedValue?.toString()}</span>
+                      <span>{cell.value.toString()}</span>
                     )}
                   </td>
                 ))}
@@ -155,15 +122,8 @@ export const Table = ({
           )}
         </tbody>
       </table>
-      {paginationEnabled && paginationFormat && (
-        <Pagination
-          paginationFormat={paginationFormat}
-          numberOfPages={numberOfPages}
-          currentPage={currentPage}
-          disableShowMoreButton={disableShowMoreButton}
-          handleShowMore={handleShowMore}
-          handlePageChange={handlePageChange}
-        />
+      {paginationConfig && paginationConfig.numberOfPages > 1 && (
+        <Pagination paginationConfig={paginationConfig} />
       )}
     </>
   );

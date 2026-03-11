@@ -1,36 +1,13 @@
-// Pagination format types
-export type PaginationFormat = "show-more" | "page-numbers";
-
-// Frontend pagination config
-type FrontendPaginationConfig = {
-  mode: "frontend";
-  format: PaginationFormat;
-  recordsPerPage?: number;
-};
-
-// Backend pagination configs (discriminated by format)
-type BackendShowMoreConfig = {
-  mode: "backend";
-  format: "show-more";
-  recordsPerPage?: number;
+export type TablePaginationConfig = {
   numberOfPages: number;
-  onShowMore: () => void;
-  enableShowMoreButton: boolean;
+  currentPage: number;
+  handlePageChange: (page: number) => void;
 };
 
-type BackendPageNumbersConfig = {
-  mode: "backend";
-  format: "page-numbers";
-  recordsPerPage?: number;
-  numberOfPages: number;
-  onPageChange: (page: number) => void;
+export type TableSortConfig = {
+  key: string;
+  order: "asc" | "desc";
 };
-
-type BackendPaginationConfig = BackendShowMoreConfig | BackendPageNumbersConfig;
-
-export type PaginationConfig =
-  | FrontendPaginationConfig
-  | BackendPaginationConfig;
 
 export type TableProps = {
   ariaLabel?: string;
@@ -39,34 +16,33 @@ export type TableProps = {
   loading?: boolean;
   error?: boolean;
   errorMessage?: string;
-  onSort?: (column: HeaderColumn) => void;
-  pagination?: PaginationConfig;
+  sortConfig?: TableSortConfig;
+  paginationConfig?: TablePaginationConfig;
 };
 
-export type HeaderColumn = {
+export type BaseHeaderColumn = {
   key: string;
   text?: string;
-  sortable?: boolean;
-  filterable?: boolean;
   customCell?: React.ReactNode;
   width?: string;
 };
+
+export type SortableHeaderColumn = BaseHeaderColumn & {
+  sortable: true;
+  onSort: () => void;
+};
+
+export type NonSortableHeaderColumn = BaseHeaderColumn & {
+  sortable?: false;
+};
+
+export type HeaderColumn = SortableHeaderColumn | NonSortableHeaderColumn;
 
 export type Data = {
   key: string;
   cells: {
     key: string;
     value: string | number | boolean;
-    displayedValue?: string | number | boolean;
     customCell?: React.ReactNode;
   }[];
-};
-
-export type SortConfig = {
-  key: string;
-  direction: "asc" | "desc";
-} | null;
-
-export type FilterConfig = {
-  [columnKey: string]: string;
 };
