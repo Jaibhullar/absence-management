@@ -77,8 +77,8 @@ src/
 │   ├── AbsencesTable/           # Main absences table with conflict detection
 │   │   ├── AbsenceConflictTooltip/  # Lazy-loaded conflict indicator
 │   │   └── FilteringByUserBanner/   # Banner shown when filtering by user
+│   ├── GridSkeleton/            # Loading skeleton for grid/table layouts
 │   ├── Table/                   # Reusable table component
-│   │   └── TableSkeleton/       # Loading skeleton
 │   ├── pagination/              # Pagination controls
 │   ├── SortIcon/                # Sort direction indicator
 │   ├── Container/               # Layout container
