@@ -1,7 +1,7 @@
 import { GridSkeleton } from "../GridSkeleton";
 import { SortIcon } from "../SortIcon";
 import type { TableProps } from "./types";
-import { Pagination } from "../pagination";
+import { Pagination } from "../Pagination";
 import { Button } from "../ui/Button";
 
 const testIds = {
