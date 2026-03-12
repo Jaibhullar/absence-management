@@ -5,7 +5,6 @@ export const sortAbsences = (
   sortConfig: AbsenceSortConfig,
 ): FormattedAbsence[] => {
   const { key: sortKey, order: sortOrder } = sortConfig;
-  if (!sortKey) return absences;
   const sortedAbsences = [...absences].sort((a, b) => {
     if (a[sortKey] < b[sortKey]) {
       return sortOrder === "asc" ? -1 : 1;
