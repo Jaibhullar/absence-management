@@ -2,6 +2,7 @@ import type {
   FormattedAbsence,
   PaginationConfig,
   AbsenceSortConfig,
+  FilteredUser,
 } from "@/types";
 import { getAbsences } from "@/services/getAbsences";
 import { formatAbsences } from "@/utils/formatAbsences";
@@ -19,7 +20,7 @@ export type UseAbsencesTableResponse = {
   absences: FormattedAbsence[];
   absencesError: string | null;
   absencesLoading: boolean;
-  filteredUser: { name: string; id: string } | null;
+  filteredUser: FilteredUser | null;
   sortConfig: AbsenceSortConfig;
 
   // handlers

@@ -1,8 +1,8 @@
-import type { FormattedAbsence } from "@/types";
+import type { FilteredUser, FormattedAbsence } from "@/types";
 
 export const getFilteredAbsences = (
   absences: FormattedAbsence[],
-  filteredUser: { name: string; id: string } | null,
+  filteredUser: FilteredUser | null,
 ) => {
   if (!filteredUser) {
     return absences;
