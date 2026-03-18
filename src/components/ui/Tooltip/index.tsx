@@ -108,6 +108,27 @@ export const Tooltip = ({
     }
   }, [isVisible, updatePosition]);
 
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const handlePositionUpdate = () => updatePosition();
+
+    window.addEventListener("scroll", handlePositionUpdate, true);
+    window.addEventListener("resize", handlePositionUpdate);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (triggerRef.current) {
+      resizeObserver = new ResizeObserver(handlePositionUpdate);
+      resizeObserver.observe(triggerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handlePositionUpdate, true);
+      window.removeEventListener("resize", handlePositionUpdate);
+      resizeObserver?.disconnect();
+    };
+  }, [isVisible, updatePosition]);
+
   return (
     <div
       ref={triggerRef}
