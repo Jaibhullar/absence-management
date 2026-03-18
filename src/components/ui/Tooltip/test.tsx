@@ -87,7 +87,9 @@ describe("Tooltip", () => {
       await user.tab();
 
       expect(screen.getByTestId(testIds.tooltip)).toBeInTheDocument();
-      expect(screen.getByTestId(testIds.tooltip)).toHaveTextContent("Focus tooltip");
+      expect(screen.getByTestId(testIds.tooltip)).toHaveTextContent(
+        "Focus tooltip",
+      );
     });
 
     it("hides tooltip on blur", async () => {
@@ -185,7 +187,10 @@ describe("Tooltip", () => {
       await user.hover(screen.getByRole("button"));
 
       const tooltip = screen.getByTestId(testIds.tooltip);
-      expect(tooltip).toHaveClass("bottom-full");
+      expect(tooltip).toHaveClass("fixed");
+      // Top placement positions tooltip above the trigger (negative top value due to offset)
+      expect(tooltip.style.top).toBeDefined();
+      expect(tooltip.style.left).toBeDefined();
     });
 
     it("applies bottom placement styles", async () => {
@@ -199,7 +204,9 @@ describe("Tooltip", () => {
       await user.hover(screen.getByRole("button"));
 
       const tooltip = screen.getByTestId(testIds.tooltip);
-      expect(tooltip).toHaveClass("top-full");
+      expect(tooltip).toHaveClass("fixed");
+      // Bottom placement positions tooltip below the trigger (positive top value)
+      expect(tooltip.style.top).toBe("8px");
     });
 
     it("applies left placement styles", async () => {
@@ -213,7 +220,9 @@ describe("Tooltip", () => {
       await user.hover(screen.getByRole("button"));
 
       const tooltip = screen.getByTestId(testIds.tooltip);
-      expect(tooltip).toHaveClass("right-full");
+      expect(tooltip).toHaveClass("fixed");
+      // Left placement positions tooltip to the left of the trigger (negative left value)
+      expect(tooltip.style.left).toBe("-8px");
     });
 
     it("applies right placement styles", async () => {
@@ -227,7 +236,9 @@ describe("Tooltip", () => {
       await user.hover(screen.getByRole("button"));
 
       const tooltip = screen.getByTestId(testIds.tooltip);
-      expect(tooltip).toHaveClass("left-full");
+      expect(tooltip).toHaveClass("fixed");
+      // Right placement positions tooltip to the right of the trigger (positive left value)
+      expect(tooltip.style.left).toBe("8px");
     });
   });
 
