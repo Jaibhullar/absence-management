@@ -7,7 +7,7 @@ import type {
 import { getAbsences } from "@/services/getAbsences";
 import { formatAbsences } from "@/utils/formatAbsences";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getFilteredAbsences } from "@/utils/getFilteredAbsences";
 import { sortAbsences } from "@/utils/sortAbsences";
 import { usePagination } from "@/hooks/usePagination";
@@ -65,9 +65,12 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
   });
 
   // handlers
-  const handleFilterAbsencesByUser = (userId: string, name: string) => {
-    setFilteredUser({ id: userId, name });
-  };
+  const handleFilterAbsencesByUser = useCallback(
+    (userId: string, name: string) => {
+      setFilteredUser({ id: userId, name });
+    },
+    [],
+  );
 
   const handleClearFilterAbsencesByUser = () => {
     setFilteredUser(null);
