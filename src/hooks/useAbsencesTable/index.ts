@@ -10,10 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { getFilteredAbsences } from "@/utils/getFilteredAbsences";
 import { sortAbsences } from "@/utils/sortAbsences";
-import { paginateData } from "@/utils/paginateData";
+import { usePagination } from "@/hooks/usePagination";
 
 export const ABSENCES_QUERY_KEY = ["absences"];
-export const ITEMS_PER_PAGE = 8;
 
 export type UseAbsencesTableResponse = {
   // states
@@ -44,9 +43,6 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
     order: "desc",
   });
 
-  // pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-
   // fetching absences
   const {
     data: rawAbsences = [],
@@ -60,28 +56,26 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
     },
   });
 
-  // filtering, sorting, and paginating absences
+  // filtering and sorting absences
   const sortedAbsences = useMemo(() => {
     const filteredResult = getFilteredAbsences(rawAbsences, filteredUser);
     return sortAbsences(filteredResult, sortConfig);
   }, [rawAbsences, filteredUser, sortConfig]);
 
-  const numberOfPages = Math.ceil(sortedAbsences.length / ITEMS_PER_PAGE);
-
-  const paginatedAbsences = useMemo(
-    () => paginateData(sortedAbsences, currentPage, ITEMS_PER_PAGE),
-    [sortedAbsences, currentPage],
-  );
+  // pagination
+  const { paginatedData, paginationConfig, resetToFirstPage } = usePagination({
+    data: sortedAbsences,
+  });
 
   // handlers
   const handleFilterAbsencesByUser = (userId: string, name: string) => {
     setFilteredUser({ id: userId, name });
-    setCurrentPage(1);
+    resetToFirstPage();
   };
 
   const handleClearFilterAbsencesByUser = () => {
     setFilteredUser(null);
-    setCurrentPage(1);
+    resetToFirstPage();
   };
 
   const handleSortAbsences = (key: keyof FormattedAbsence) => {
@@ -94,17 +88,12 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
       }
       return { key, order: "asc" };
     });
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    const clampedPage = Math.max(1, Math.min(page, numberOfPages));
-    setCurrentPage(clampedPage);
+    resetToFirstPage();
   };
 
   return {
     // states
-    absences: paginatedAbsences,
+    absences: paginatedData,
     absencesError: isError ? "There was an error fetching absences..." : null,
     absencesLoading,
     filteredUser,
@@ -116,10 +105,6 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
     handleSortAbsences,
 
     // pagination config
-    paginationConfig: {
-      currentPage,
-      numberOfPages,
-      handlePageChange,
-    },
+    paginationConfig,
   };
 };

@@ -3,6 +3,7 @@ import { FilteringByUserBanner } from "./FilteringByUserBanner";
 import { Table } from "../Table";
 import { mapAbsencesToTableData } from "@/utils/mapAbsencesToTableData";
 import type { HeaderColumn } from "../Table/types";
+import { useMemo } from "react";
 
 export const AbsencesTable = () => {
   const {
@@ -56,10 +57,14 @@ export const AbsencesTable = () => {
     { key: "approved", text: "Status", width: "10%" },
   ];
 
-  const tableData = mapAbsencesToTableData({
-    absences,
-    onFilterByUser: handleFilterAbsencesByUser,
-  });
+  const tableData = useMemo(
+    () =>
+      mapAbsencesToTableData({
+        absences,
+        onFilterByUser: handleFilterAbsencesByUser,
+      }),
+    [absences, handleFilterAbsencesByUser],
+  );
 
   return (
     <section className="flex flex-col max-h-[calc(100vh-116px)] overflow-hidden pt-4 pb-12 rounded-md space-y-6">

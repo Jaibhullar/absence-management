@@ -16,7 +16,8 @@ export const formatAbsences = (absences: Absence[]): FormattedAbsence[] => {
   return absences.map((absence) => {
     const endDate = addDays(parseISO(absence.startDate), absence.days);
 
-    const formattedType = ABSENCE_TYPE_LABELS[absence.absenceType];
+    const formattedType =
+      ABSENCE_TYPE_LABELS[absence.absenceType] ?? absence.absenceType;
 
     return {
       id: absence.id,
