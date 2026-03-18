@@ -60,19 +60,17 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
   }, [rawAbsences, filteredUser, sortConfig]);
 
   // pagination
-  const { paginatedData, paginationConfig, resetToFirstPage } = usePagination({
+  const { paginatedData, paginationConfig } = usePagination({
     data: sortedAbsences,
   });
 
   // handlers
   const handleFilterAbsencesByUser = (userId: string, name: string) => {
     setFilteredUser({ id: userId, name });
-    resetToFirstPage();
   };
 
   const handleClearFilterAbsencesByUser = () => {
     setFilteredUser(null);
-    resetToFirstPage();
   };
 
   const handleSortAbsences = (key: keyof FormattedAbsence) => {
@@ -85,7 +83,6 @@ export const useAbsencesTable = (): UseAbsencesTableResponse => {
       }
       return { key, order: "asc" };
     });
-    resetToFirstPage();
   };
 
   return {

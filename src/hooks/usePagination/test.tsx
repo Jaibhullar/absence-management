@@ -136,42 +136,6 @@ describe("usePagination", () => {
     });
   });
 
-  describe("resetToFirstPage", () => {
-    it("should reset currentPage to 1", () => {
-      const data = createTestData(20);
-
-      const { result } = renderHook(() => usePagination({ data }));
-
-      act(() => {
-        result.current.paginationConfig.handlePageChange(2);
-      });
-
-      expect(result.current.paginationConfig.currentPage).toBe(2);
-
-      act(() => {
-        result.current.resetToFirstPage();
-      });
-
-      expect(result.current.paginationConfig.currentPage).toBe(1);
-    });
-
-    it("should return first page data after reset", () => {
-      const data = createTestData(20);
-
-      const { result } = renderHook(() => usePagination({ data }));
-
-      act(() => {
-        result.current.paginationConfig.handlePageChange(2);
-      });
-
-      act(() => {
-        result.current.resetToFirstPage();
-      });
-
-      expect(result.current.paginatedData[0]).toEqual(data[0]);
-    });
-  });
-
   describe("data reactivity", () => {
     it("should recalculate pagination when data changes", () => {
       const initialData = createTestData(20);

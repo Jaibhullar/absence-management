@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { paginateData } from "@/utils/paginateData";
 import type { PaginationConfig } from "@/types";
 
@@ -13,7 +13,6 @@ type UsePaginationOptions<T> = {
 type UsePaginationResponse<T> = {
   paginatedData: T[];
   paginationConfig: PaginationConfig;
-  resetToFirstPage: () => void;
 };
 
 export const usePagination = <T>({
@@ -38,9 +37,10 @@ export const usePagination = <T>({
     setCurrentPage(clampedPage);
   };
 
-  const resetToFirstPage = () => {
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    const resetToFirstPage = () => setCurrentPage(1);
+    resetToFirstPage();
+  }, [data, itemsPerPage]);
 
   return {
     paginatedData,
@@ -49,6 +49,5 @@ export const usePagination = <T>({
       numberOfPages,
       handlePageChange,
     },
-    resetToFirstPage,
   };
 };
