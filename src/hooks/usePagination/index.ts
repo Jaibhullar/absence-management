@@ -23,11 +23,14 @@ export const usePagination = <T>({
 }: UsePaginationOptions<T>): UsePaginationResponse<T> => {
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  const numberOfPages = Math.ceil(data.length / itemsPerPage);
+  const safeItemsPerPage =
+    itemsPerPage > 0 ? itemsPerPage : DEFAULT_ITEMS_PER_PAGE;
+
+  const numberOfPages = Math.ceil(data.length / safeItemsPerPage);
 
   const paginatedData = useMemo(
-    () => paginateData(data, currentPage, itemsPerPage),
-    [data, currentPage, itemsPerPage],
+    () => paginateData(data, currentPage, safeItemsPerPage),
+    [data, currentPage, safeItemsPerPage],
   );
 
   const handlePageChange = (page: number) => {

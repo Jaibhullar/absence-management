@@ -33,10 +33,7 @@ export type UseAbsencesTableResponse = {
 
 export const useAbsencesTable = (): UseAbsencesTableResponse => {
   // filtering state
-  const [filteredUser, setFilteredUser] = useState<{
-    name: string;
-    id: string;
-  } | null>(null);
+  const [filteredUser, setFilteredUser] = useState<FilteredUser | null>(null);
   // sorting state
   const [sortConfig, setSortConfig] = useState<AbsenceSortConfig>({
     key: "startDate",
