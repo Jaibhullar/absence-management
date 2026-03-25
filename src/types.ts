@@ -38,3 +38,8 @@ export type PaginationConfig = {
   numberOfPages: number;
   handlePageChange: (page: number) => void;
 };
+
+export type FilteredUser = {
+  name: string;
+  id: string;
+};

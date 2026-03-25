@@ -2,7 +2,8 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Absence } from "@/types";
-import { useAbsencesTable, ABSENCES_QUERY_KEY, ITEMS_PER_PAGE } from ".";
+import { useAbsencesTable, ABSENCES_QUERY_KEY } from ".";
+import { DEFAULT_ITEMS_PER_PAGE } from "@/hooks/usePagination";
 
 const mockGetAbsences = jest.fn();
 
@@ -109,9 +110,9 @@ const createWrapper = () => {
   );
 };
 
-// Helper constants derived from mock data - tests won't break if ITEMS_PER_PAGE changes
+// Helper constants derived from mock data - tests won't break if DEFAULT_ITEMS_PER_PAGE changes
 const TOTAL_MOCK_ITEMS = mockAbsencesResponse.length;
-const EXPECTED_PAGES = Math.ceil(TOTAL_MOCK_ITEMS / ITEMS_PER_PAGE);
+const EXPECTED_PAGES = Math.ceil(TOTAL_MOCK_ITEMS / DEFAULT_ITEMS_PER_PAGE);
 const USER_1_ABSENCES = mockAbsencesResponse.filter(
   (a) => a.employee.id === "user-1",
 ).length;
@@ -148,9 +149,9 @@ describe("useAbsencesTable", () => {
         expect(result.current.absencesLoading).toBe(false);
       });
 
-      // First page should have at most ITEMS_PER_PAGE items
+      // First page should have at most DEFAULT_ITEMS_PER_PAGE items
       expect(result.current.absences.length).toBeLessThanOrEqual(
-        ITEMS_PER_PAGE,
+        DEFAULT_ITEMS_PER_PAGE,
       );
       expect(result.current.absences.length).toBeGreaterThan(0);
       expect(result.current.absencesError).toBeNull();
@@ -346,7 +347,7 @@ describe("useAbsencesTable", () => {
       });
 
       expect(result.current.absences.length).toBeLessThanOrEqual(
-        ITEMS_PER_PAGE,
+        DEFAULT_ITEMS_PER_PAGE,
       );
       expect(result.current.paginationConfig.currentPage).toBe(1);
     });
@@ -543,7 +544,7 @@ describe("useAbsencesTable", () => {
       });
 
       // Filtering to user-1 should result in fewer pages (or same if user has many)
-      const filteredPages = Math.ceil(USER_1_ABSENCES / ITEMS_PER_PAGE);
+      const filteredPages = Math.ceil(USER_1_ABSENCES / DEFAULT_ITEMS_PER_PAGE);
       expect(result.current.paginationConfig.numberOfPages).toBe(filteredPages);
       expect(result.current.paginationConfig.numberOfPages).toBeLessThanOrEqual(
         initialPages,
