@@ -7,7 +7,6 @@ export const DEFAULT_ITEMS_PER_PAGE = 8;
 type UsePaginationOptions<T> = {
   data: T[];
   itemsPerPage?: number;
-  initialPage?: number;
 };
 
 type UsePaginationResponse<T> = {
@@ -18,9 +17,8 @@ type UsePaginationResponse<T> = {
 export const usePagination = <T>({
   data,
   itemsPerPage = DEFAULT_ITEMS_PER_PAGE,
-  initialPage = 1,
 }: UsePaginationOptions<T>): UsePaginationResponse<T> => {
-  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const safeItemsPerPage =
     itemsPerPage > 0 ? itemsPerPage : DEFAULT_ITEMS_PER_PAGE;

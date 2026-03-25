@@ -44,15 +44,6 @@ describe("usePagination", () => {
       );
     });
 
-    it("should use custom initialPage when provided", () => {
-      const data = createTestData(20);
-      const initialPage = 2;
-
-      const { result } = renderHook(() => usePagination({ data, initialPage }));
-
-      expect(result.current.paginationConfig.currentPage).toBe(initialPage);
-    });
-
     it("should handle empty data array", () => {
       const { result } = renderHook(() => usePagination({ data: [] }));
 

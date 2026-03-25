@@ -3,6 +3,13 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { Tooltip } from ".";
 
+// Mock ResizeObserver which is not available in jsdom
+window.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 const testIds = Tooltip.testIds;
 
 describe("Tooltip", () => {
